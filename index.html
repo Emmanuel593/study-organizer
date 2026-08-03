@@ -48,7 +48,7 @@
         }
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #94a3b8; }
         
-        input[type="password"], textarea {
+        input[type="password"], textarea, select {
             width: 100%;
             padding: 14px;
             background: var(--input-bg);
@@ -60,7 +60,7 @@
             font-family: inherit;
             transition: all 0.2s ease;
         }
-        input[type="password"]:focus, textarea:focus {
+        input[type="password"]:focus, textarea:focus, select:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             outline: none;
@@ -69,35 +69,63 @@
         
         .counter { font-size: 0.75rem; color: #64748b; text-align: right; margin-top: 6px; font-variant-numeric: tabular-nums; }
 
-        /* Advanced Pill Grid for Source Types */
-        .pill-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 6px;
-        }
-        @media(max-width: 750px) {
-            .pill-grid { grid-template-columns: 1fr; }
-        }
-        .pill {
+        /* Collapsible Source Selector Accordion */
+        .accordion-wrapper {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 16px 14px;
-            color: #94a3b8;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            margin-bottom: 6px;
         }
-        .pill:hover { border-color: #475569; color: #fff; transform: translateY(-1px); }
-        .pill.active {
+        .accordion-header {
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #94a3b8;
+            user-select: none;
+            background: rgba(13, 19, 34, 0.5);
+            transition: background 0.2s;
+        }
+        .accordion-header:hover { background: rgba(30, 41, 59, 0.5); color: #fff; }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 18px;
+        }
+        .accordion-content.open {
+            max-height: 350px;
+            padding: 14px 18px 18px 18px;
+            overflow-y: auto;
+        }
+        
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        @media(max-width: 700px) {
+            .source-grid { grid-template-columns: 1fr; }
+        }
+        .source-option {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .source-option:hover { border-color: #475569; }
+        .source-option.active {
             background: rgba(59, 130, 246, 0.12);
             border-color: var(--accent-color);
             color: #60a5fa;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
         }
+        .source-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+        .source-desc { font-size: 0.75rem; color: #64748b; }
 
         button.generate-btn {
             margin-top: 15px;
@@ -153,24 +181,53 @@
     </div>
 
     <div class="section-group">
-        <label>Source Type Strategy Blueprint</label>
-        <div class="pill-grid">
-            <div class="pill active" onclick="setSourceType('textbook', this)">📘 Textbook Chapter<br><span style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Deep concepts & definitions</span></div>
-            <div class="pill" onclick="setSourceType('article', this)">📰 Online Article<br><span style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Arguments & core thesis</span></div>
-            <div class="pill" onclick="setSourceType('wiki', this)">🏛️ Wikipedia / Wiki<br><span style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Timelines, facts & timelines</span></div>
+        <label>Source Type Selector</label>
+        <div class="accordion-wrapper">
+            <div class="accordion-header" onclick="toggleAccordion()">
+                <span id="selectedSourceLabel">📘 Textbook Chapter (Click to change source type)</span>
+                <span id="accordionArrow">▼</span>
+            </div>
+            <div class="accordion-content" id="accordionContent">
+                <div class="source-grid">
+                    <div class="source-option active" onclick="selectSource('textbook', '📘 Textbook Chapter')">
+                        <div class="source-title">📘 Textbook Chapter</div>
+                        <div class="source-desc">Core concepts, definitions, and sequential topic blocks.</div>
+                    </div>
+                    <div class="source-option" onclick="selectSource('journal', '🔬 Academic Journal Article')">
+                        <div class="source-title">🔬 Academic Journal Article</div>
+                        <div class="source-desc">Methodologies, abstract findings, data, and scholarly conclusions.</div>
+                    </div>
+                    <div class="source-option" onclick="selectSource('news', '📰 News or Magazine Article')">
+                        <div class="source-title">📰 News / Magazine Article</div>
+                        <div class="source-desc">Current events, primary reporting details, quotes, and timelines.</div>
+                    </div>
+                    <div class="source-option" onclick="selectSource('wiki', '🏛️ Wikipedia / Reference Wiki')">
+                        <div class="source-title">🏛️ Wikipedia / Reference Wiki</div>
+                        <div class="source-desc">Structured factual overviews, quick facts, and background info.</div>
+                    </div>
+                    <div class="source-option" onclick="selectSource('report', '📊 Government or Corporate Report')">
+                        <div class="source-title">📊 Government / Official Report</div>
+                        <div class="source-desc">Statistical data, official policies, guidelines, and metrics.</div>
+                    </div>
+                    <div class="source-option" onclick="selectSource('essay', '📝 General Essay or Reading')">
+                        <div class="source-title">📝 General Essay / Reading</div>
+                        <div class="source-desc">Arguments, themes, narrative flow, and core summaries.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="counter" style="text-align: left; margin-top: 6px;">Active Strategy: <span id="activeSourceDisplay" style="color: #60a5fa; text-transform: uppercase; font-weight: bold;">Textbook Chapter</span></div>
+        <div class="counter" style="text-align: left; margin-top: 6px;">Active Selection Character Count: <span id="sourceTypeCharCount">16</span></div>
     </div>
 
     <div class="section-group">
         <label for="rawText">Paste Raw Source Text Here</label>
-        <textarea id="rawText" placeholder="Paste massive reading walls, textbook sections, or research logs..." oninput="updateAllCounters()"></textarea>
+        <textarea id="rawText" placeholder="Paste reading walls, textbook sections, or documents here..." oninput="updateAllCounters()"></textarea>
         <div id="rawCounter" class="counter">Characters: 0</div>
     </div>
 
     <div class="section-group">
         <label for="teacherPrompt">Teacher's Specific Focus & Instructions (Optional)</label>
-        <textarea id="teacherPrompt" style="height: 75px;" placeholder="e.g., Emphasize major dates, specific vocabulary words, and exam warning areas..." oninput="updateAllCounters()"></textarea>
+        <textarea id="teacherPrompt" style="height: 75px;" placeholder="e.g., Emphasize core definitions, main terms, and test warning areas..." oninput="updateAllCounters()"></textarea>
         <div id="promptCounter" class="counter">Characters: 0</div>
     </div>
 
@@ -187,7 +244,8 @@
 </div>
 
 <script>
-    let selectedSourceType = 'textbook';
+    let activeSourceType = 'textbook';
+    let activeSourceTextName = '📘 Textbook Chapter';
 
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem('gemini_api_key');
@@ -204,12 +262,21 @@
         document.getElementById('keyCounter').innerText = key.length;
     }
 
-    function setSourceType(type, element) {
-        selectedSourceType = type;
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-        element.classList.add('active');
-        const labels = { 'textbook': 'Textbook Chapter', 'article': 'Online Article', 'wiki': 'Wikipedia / Wiki' };
-        document.getElementById('activeSourceDisplay').innerText = labels[type];
+    function toggleAccordion() {
+        const content = document.getElementById('accordionContent');
+        const arrow = document.getElementById('accordionArrow');
+        content.classList.toggle('open');
+        arrow.innerText = content.classList.contains('open') ? '▲' : '▼';
+    }
+
+    function selectSource(type, label) {
+        activeSourceType = type;
+        activeSourceTextName = label;
+        document.getElementById('selectedSourceLabel').innerText = label + ' (Click to change source type)';
+        document.querySelectorAll('.source-option').forEach(opt => opt.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById('sourceTypeCharCount').innerText = label.length;
+        toggleAccordion();
     }
 
     function updateAllCounters() {
@@ -246,33 +313,22 @@
 
         output.innerText = "Synthesizing ultimate open-note study guide...";
 
-        // Tailored behavior instructions based on selected source button
-        let blueprintInstruction = "";
-        if (selectedSourceType === 'textbook') {
-            blueprintInstruction = "SOURCE ARCHETYPE: TEXTBOOK CHAPTER. Structure layout meticulously around deep conceptual frameworks, core academic definitions, hierarchical section breakdowns, mechanisms, and cause-and-effect paths essential for an open-note exam.";
-        } else if (selectedSourceType === 'article') {
-            blueprintInstruction = "SOURCE ARCHETYPE: ONLINE ARTICLE. Structure layout around the primary thesis statement, key argumentative pillars, supporting evidence points, author stance, and counter-arguments.";
-        } else if (selectedSourceType === 'wiki') {
-            blueprintInstruction = "SOURCE ARCHETYPE: WIKIPEDIA / REFERENCE. Structure layout around accurate chronological sequences, hard data sheets, structured fact matrices, and exact entity definitions.";
-        }
-
         const systemInstruction = `You are an elite academic study guide engine built specifically to guarantee top grades on open-note tests. Your output must read naturally like it was written by an exceptionally organized human student by hand. 
 
 MANDATORY FORMATTING STANDARDS:
 1. ZERO AI MARKDOWN ARTIFACTS: Do not wrap output in backticks (\`\`\`). Never output markdown symbol stars (**), hash signs, or code styling within the text body. Use clean all-caps formatting for section headers.
 2. CHECKBOX STUDY SYSTEM: Every critical vocabulary word, core term, law, or primary concept must feature an interactive checklist line formatted precisely like:
 [ ] Term Name: Concise, high-retention definition or explanation.
-3. BLUEPRINT ALIGNMENT: ${blueprintInstruction}
+3. SOURCE ADAPTATION: The user provided a source type of type: ${activeSourceTextName}. Tailor the structure perfectly so it matches how notes should cleanly look for this exact type of reading material.
 4. TEACHER DIRECTIVE OVERRIDE: If the teacher focus box contains instructions, those directives take supreme precedence across the entire layout.
 5. OPEN-NOTE READABILITY: Keep everything hyper-scannable, clean, and structured seamlessly for instant printing or pasting directly into Google Docs.`;
 
-        let userQuery = `Transform this material into an elite open-note study guide.\nSelected Source Blueprint: ${selectedSourceType.toUpperCase()}\n`;
+        let userQuery = `Transform this material into an elite open-note study guide.\nSource Type: ${activeSourceTextName}\n`;
         if(prompt) userQuery += `Teacher Focus / Directives: ${prompt}\n`;
         userQuery += `\nRaw Source Text:\n${text}`;
 
         try {
-            // Using the current stable gemini-3.6-flash production model endpoint
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -289,8 +345,6 @@ MANDATORY FORMATTING STANDARDS:
             }
 
             let rawOutput = data.candidates[0].content.parts[0].text;
-            
-            // Comprehensive safety scrubber to catch and destroy any stray markdown block wrappers
             rawOutput = rawOutput.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
 
             output.innerText = rawOutput;
