@@ -124,8 +124,8 @@
             border-color: var(--accent-color);
             color: #93c5fd;
         }
-        .card-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
-        .card-desc { font-size: 0.75rem; color: #9ca3af; line-height: 1.3; }
+        .card-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; pointer-events: none; }
+        .card-desc { font-size: 0.75rem; color: #9ca3af; line-height: 1.3; pointer-events: none; }
 
         .toolbar {
             display: flex;
@@ -270,7 +270,7 @@
                 <span id="layoutArrow">▼</span>
             </div>
             <div class="accordion-content" id="layoutContent">
-                <div class="option-grid">
+                <div class="option-grid" id="layoutGrid">
                     <div class="option-card active" onclick="selectLayout('⚡ Ultimate Test Cheat Sheet', event)">
                         <div class="card-title">⚡ Ultimate Cheat Sheet</div>
                         <div class="card-desc">Direct answers, instant lookups.</div>
@@ -348,16 +348,29 @@
     function toggleAccordion(contentId, arrowId) {
         const content = document.getElementById(contentId);
         const arrow = document.getElementById(arrowId);
-        content.classList.toggle('open');
-        arrow.innerText = content.classList.contains('open') ? '▲' : '▼';
+        const isOpen = content.classList.contains('open');
+        
+        // Close all accordions first
+        document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open'));
+        document.querySelectorAll('[id$="Arrow"]').forEach(el => el.innerText = '▼');
+
+        // Toggle target if it wasn't open
+        if (!isOpen) {
+            content.classList.add('open');
+            arrow.innerText = '▲';
+        }
     }
 
     function selectSource(label, event) {
         activeSourceTextName = label;
         document.getElementById('selectedSourceLabel').innerText = label;
-        const grid = event.currentTarget.parentElement;
+        const grid = document.getElementById('sourceGrid');
         grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        
+        // Find correct card element even if click hits child elements
+        let card = event.target.closest('.option-card');
+        if (card) card.classList.add('active');
+
         document.getElementById('sourceCharCount').innerText = label.length;
         if(event.isTrusted) {
             document.getElementById('autoStatus').style.display = 'none';
@@ -368,9 +381,12 @@
     function selectLayout(label, event) {
         activeLayoutName = label;
         document.getElementById('selectedLayoutLabel').innerText = label;
-        const grid = event.currentTarget.parentElement;
+        const grid = document.getElementById('layoutGrid');
         grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        
+        let card = event.target.closest('.option-card');
+        if (card) card.classList.add('active');
+
         document.getElementById('layoutCharCount').innerText = label.length;
         toggleAccordion('layoutContent', 'layoutArrow');
     }
