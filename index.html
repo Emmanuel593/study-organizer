@@ -65,11 +65,11 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             outline: none;
         }
-        textarea { height: 150px; resize: vertical; }
+        textarea { height: 140px; resize: vertical; }
         
         .counter { font-size: 0.75rem; color: #64748b; text-align: right; margin-top: 6px; font-variant-numeric: tabular-nums; }
 
-        /* Universal Master Expandable Source Selector Grid */
+        /* Accordions for Source and Layout Selection */
         .accordion-wrapper {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -97,23 +97,23 @@
             padding: 0 18px;
         }
         .accordion-content.open {
-            max-height: 580px;
+            max-height: 480px;
             padding: 16px 18px 18px 18px;
             overflow-y: auto;
         }
         
-        .source-grid {
+        .option-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
         @media(max-width: 900px) {
-            .source-grid { grid-template-columns: repeat(2, 1fr); }
+            .option-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media(max-width: 600px) {
-            .source-grid { grid-template-columns: 1fr; }
+            .option-grid { grid-template-columns: 1fr; }
         }
-        .source-option {
+        .option-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -121,14 +121,14 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .source-option:hover { border-color: #475569; }
-        .source-option.active {
+        .option-card:hover { border-color: #475569; }
+        .option-card.active {
             background: rgba(59, 130, 246, 0.12);
             border-color: var(--accent-color);
             color: #60a5fa;
         }
-        .source-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 2px; }
-        .source-desc { font-size: 0.7rem; color: #64748b; line-height: 1.2; }
+        .card-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 2px; }
+        .card-desc { font-size: 0.7rem; color: #64748b; line-height: 1.2; }
 
         button.generate-btn {
             margin-top: 15px;
@@ -183,94 +183,107 @@
         <div class="counter" style="text-align: left; margin-top: 4px;">Characters: <span id="keyCounter">0</span></div>
     </div>
 
+    <!-- WORDS-ONLY TEXT SOURCES -->
     <div class="section-group">
-        <label>Master High School Source Library (All Grades & Formats)</label>
+        <label>1. Select Your Document Source (History, English, Gov, Social Studies)</label>
         <div class="accordion-wrapper">
-            <div class="accordion-header" onclick="toggleAccordion()">
-                <span id="selectedSourceLabel">📘 Textbook Chapter / Reading Block (Click to expand all sources)</span>
-                <span id="accordionArrow">▼</span>
+            <div class="accordion-header" onclick="toggleAccordion('sourceContent', 'sourceArrow')">
+                <span id="selectedSourceLabel">📖 Textbook Chapter / Reading Block (Click to change source)</span>
+                <span id="sourceArrow">▼</span>
             </div>
-            <div class="accordion-content" id="accordionContent">
-                <div class="source-grid">
-                    <div class="source-option active" onclick="selectSource('textbook', '📘 Textbook Chapter / Reading Block')">
-                        <div class="source-title">📘 Textbook Chapter</div>
-                        <div class="source-desc">Core definitions, concepts, and sequential units.</div>
+            <div class="accordion-content" id="sourceContent">
+                <div class="option-grid">
+                    <div class="option-card active" onclick="selectSource('textbook', '📖 Textbook Chapter / Reading Block', event)">
+                        <div class="card-title">📖 Textbook Chapter</div>
+                        <div class="card-desc">Core definitions, history blocks, and events.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('lecture', '🎙️ Teacher Lecture Notes / Whiteboard Slides')">
-                        <div class="source-title">🎙️ Lecture / Slides</div>
-                        <div class="source-desc">Direct board points, lists, and teacher emphases.</div>
+                    <div class="option-card" onclick="selectSource('novel', '📚 Literature / Novel / Play Chapter', event)">
+                        <div class="card-title">📚 Literature / Novel</div>
+                        <div class="card-desc">Plot points, character arcs, themes, and quotes.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('studyguide', '📋 Teacher Study Guide / Unit Outline')">
-                        <div class="source-title">📋 Teacher Study Guide</div>
-                        <div class="source-desc">Explicit test terms, objectives, and exam prompts.</div>
+                    <div class="option-card" onclick="selectSource('primary', '📜 Historical Document / Speech / Letter', event)">
+                        <div class="card-title">📜 Historical Document</div>
+                        <div class="card-desc">Speeches, founding acts, laws, and letters.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('primary', '📜 Historical Primary Source Document')">
-                        <div class="source-title">📜 Historical Document</div>
-                        <div class="source-desc">Speeches, founding laws, letters, and logs.</div>
+                    <div class="option-card" onclick="selectSource('gov', '⚖️ Government / Civics / Ethnic Studies Reading', event)">
+                        <div class="card-title">⚖️ Gov / Civics / Ethnic Studies</div>
+                        <div class="card-desc">Policies, court cases, rights, and movements.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('novel', '📖 Literature Novel / Play Chapter')">
-                        <div class="source-title">📖 Literature / Play</div>
-                        <div class="source-desc">Plot structure, character traits, quotes, and themes.</div>
+                    <div class="option-card" onclick="selectSource('article', '📰 News Article, Op-Ed, or Editorial', event)">
+                        <div class="card-title">📰 News / Editorial</div>
+                        <div class="card-desc">Current events, viewpoints, and arguments.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('lab', '⚗️ Science Lab Procedure / Experiment Manual')">
-                        <div class="source-title">⚗️ Science Lab Guide</div>
-                        <div class="source-desc">Hypotheses, steps, chemical equations, and metrics.</div>
+                    <div class="option-card" onclick="selectSource('lecture', '🎙️ Teacher Lecture Notes / Board Slides', event)">
+                        <div class="card-title">🎙️ Lecture / Slides</div>
+                        <div class="card-desc">Direct board points, lists, and key takeaways.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('math', '📐 Math Proof, Formula Sheet, or Problem Set')">
-                        <div class="source-title">📐 Math Proof / Formula</div>
-                        <div class="source-desc">Theorems, step calculations, and rule breakdowns.</div>
+                    <div class="option-card" onclick="selectSource('wiki', '🏛️ Wikipedia / Reference Wiki Page', event)">
+                        <div class="card-title">🏛️ Wiki / Reference</div>
+                        <div class="card-desc">Structured factual summaries and background info.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('article', '📰 News Article, Op-Ed, or Magazine Piece')">
-                        <div class="source-title">📰 News / Editorial</div>
-                        <div class="source-desc">Current events, viewpoints, and reporting facts.</div>
+                    <div class="option-card" onclick="selectSource('essay', '📝 Student Essay, DBQ, or Writing Piece', event)">
+                        <div class="card-title">📝 Essay / DBQ Writing</div>
+                        <div class="card-desc">Thesis statements, claims, and evidence logs.</div>
                     </div>
-                    <div class="source-option" onclick="selectSource('journal', '🔬 Academic Research Paper / Journal')">
-                        <div class="source-title">🔬 Research / Journal</div>
-                        <div class="source-desc">Abstracts, methodology, data sets, and conclusions.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('wiki', '🏛️ Encyclopedia / Wiki Reference Page')">
-                        <div class="source-title">🏛️ Wiki / Reference</div>
-                        <div class="source-desc">Structured factual overviews and timelines.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('video', '🎥 Educational Video / Documentary Transcript')">
-                        <div class="source-title">🎥 Video Transcript</div>
-                        <div class="source-desc">Spoken breakdowns, arguments, and film clips.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('report', '📊 Government, Census, or Statistical Report')">
-                        <div class="source-title">📊 Official Report</div>
-                        <div class="source-desc">Data tables, public policies, and metrics.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('essay', '📝 Student Essay, DBQ, or Analytical Writing')">
-                        <div class="source-title">📝 Essay / DBQ Writing</div>
-                        <div class="source-desc">Thesis structures, body paragraphs, and counter-claims.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('handout', '📄 Classroom Handout / Worksheet Packet')">
-                        <div class="source-title">📄 Worksheet Packet</div>
-                        <div class="source-desc">Mixed questions, charts, and short-answer prompts.</div>
-                    </div>
-                    <div class="source-option" onclick="selectSource('vocab', '🔤 Vocabulary List / Terminology Glossary')">
-                        <div class="source-title">🔤 Vocab Glossary</div>
-                        <div class="source-desc">Key terms, roots, contexts, and clear definitions.</div>
+                    <div class="option-card" onclick="selectSource('packet', '📄 Worksheet Packet / Handout Reading', event)">
+                        <div class="card-title">📄 Worksheet Packet</div>
+                        <div class="card-desc">Short-answer passages and review questions.</div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="counter" style="text-align: left; margin-top: 6px;">Active Selection Character Count: <span id="sourceTypeCharCount">33</span></div>
+        <div class="counter" style="text-align: left; margin-top: 6px;">Source Character Count: <span id="sourceCharCount">34</span></div>
+    </div>
+
+    <!-- SETUP / FORMAT LAYOUT STYLES -->
+    <div class="section-group">
+        <label>2. Select Note Layout Style (How you want it structured for your A+)</label>
+        <div class="accordion-wrapper">
+            <div class="accordion-header" onclick="toggleAccordion('layoutContent', 'layoutArrow')">
+                <span id="selectedLayoutLabel">⚡ Ultimate Test Cheat Sheet (Click to change format)</span>
+                <span id="layoutArrow">▼</span>
+            </div>
+            <div class="accordion-content" id="layoutContent">
+                <div class="option-grid">
+                    <div class="option-card active" onclick="selectLayout('cheatsheet', '⚡ Ultimate Test Cheat Sheet', event)">
+                        <div class="card-title">⚡ Ultimate Cheat Sheet</div>
+                        <div class="card-desc">Direct answers, instant lookups, zero fluff.</div>
+                    </div>
+                    <div class="option-card" onclick="selectLayout('cornell', '📝 Cornell Notes Layout', event)">
+                        <div class="card-title">📝 Cornell Layout</div>
+                        <div class="card-desc">Cue column on left, clear summaries on right.</div>
+                    </div>
+                    <div class="option-card" onclick="selectLayout('classic', '📂 Classic Outline Layout', event)">
+                        <div class="card-title">📂 Classic Outline</div>
+                        <div class="card-desc">Clean headers, bullet points, and clean flow.</div>
+                    </div>
+                    <div class="option-card" onclick="selectLayout('directmatch', '🎯 Direct Test-Answer Matcher', event)">
+                        <div class="card-title">🎯 Direct Answer Matcher</div>
+                        <div class="card-desc">Formatted so you spot test answers instantly.</div>
+                    </div>
+                    <div class="option-card" onclick="selectLayout('eli5', '🧠 Dumbass-Proof Plain English', event)">
+                        <div class="card-title">🧠 Dumbass-Proof Mode</div>
+                        <div class="card-desc">Zero big words. Pure human slang-free clarity.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="counter" style="text-align: left; margin-top: 6px;">Layout Character Count: <span id="layoutCharCount">29</span></div>
     </div>
 
     <div class="section-group">
         <label for="rawText">Paste Raw Source Text Here</label>
-        <textarea id="rawText" placeholder="Paste your reading passages, teacher study lists, or text blocks here..." oninput="updateAllCounters()"></textarea>
+        <textarea id="rawText" placeholder="Paste your history chapter, reading passage, or article text here..." oninput="updateAllCounters()"></textarea>
         <div id="rawCounter" class="counter">Characters: 0</div>
     </div>
 
     <div class="section-group">
         <label for="teacherPrompt">Teacher's Specific Focus & Instructions (Optional)</label>
-        <textarea id="teacherPrompt" style="height: 75px;" placeholder="e.g., Paste exact teacher instructions: 'Study terms on page 4, focus on causes of the war...'" oninput="updateAllCounters()"></textarea>
+        <textarea id="teacherPrompt" style="height: 75px;" placeholder="e.g., Paste exact teacher test instructions: 'Questions will cover the causes and effects...'" oninput="updateAllCounters()"></textarea>
         <div id="promptCounter" class="counter">Characters: 0</div>
     </div>
 
-    <button class="generate-btn" onclick="formatNotes()">Generate Elite Open-Note Study Guide</button>
+    <button class="generate-btn" onclick="formatNotes()">Generate A+ Open-Note Study Guide</button>
 
     <div class="output-section">
         <label>Formatted Output (Ready to Copy Directly into Google Docs)</label>
@@ -283,7 +296,8 @@
 </div>
 
 <script>
-    let activeSourceTextName = '📘 Textbook Chapter / Reading Block';
+    let activeSourceTextName = '📖 Textbook Chapter / Reading Block';
+    let activeLayoutName = '⚡ Ultimate Test Cheat Sheet';
 
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem('gemini_api_key');
@@ -300,20 +314,32 @@
         document.getElementById('keyCounter').innerText = key.length;
     }
 
-    function toggleAccordion() {
-        const content = document.getElementById('accordionContent');
-        const arrow = document.getElementById('accordionArrow');
+    function toggleAccordion(contentId, arrowId) {
+        const content = document.getElementById(contentId);
+        const arrow = document.getElementById(arrowId);
         content.classList.toggle('open');
         arrow.innerText = content.classList.contains('open') ? '▲' : '▼';
     }
 
-    function selectSource(type, label) {
+    function selectSource(type, label, event) {
         activeSourceTextName = label;
-        document.getElementById('selectedSourceLabel').innerText = label + ' (Click to expand all sources)';
-        document.querySelectorAll('.source-option').forEach(opt => opt.classList.remove('active'));
+        document.getElementById('selectedSourceLabel').innerText = label + ' (Click to change source)';
+        // find parent card grid and clear active
+        const grid = event.currentTarget.parentElement;
+        grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
         event.currentTarget.classList.add('active');
-        document.getElementById('sourceTypeCharCount').innerText = label.length;
-        toggleAccordion();
+        document.getElementById('sourceCharCount').innerText = label.length;
+        toggleAccordion('sourceContent', 'sourceArrow');
+    }
+
+    function selectLayout(type, label, event) {
+        activeLayoutName = label;
+        document.getElementById('selectedLayoutLabel').innerText = label + ' (Click to change format)';
+        const grid = event.currentTarget.parentElement;
+        grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById('layoutCharCount').innerText = label.length;
+        toggleAccordion('layoutContent', 'layoutArrow');
     }
 
     function updateAllCounters() {
@@ -344,24 +370,26 @@
             return;
         }
         if (!text) {
-            output.innerText = "Error: Please paste raw source text or teacher guidelines into the primary text box first.";
+            output.innerText = "Error: Please paste raw source text into the primary text box first.";
             return;
         }
 
-        output.innerText = "Synthesizing ultimate open-note study guide...";
+        output.innerText = "Synthesizing ultimate A+ open-note study guide...";
 
-        const systemInstruction = `You are an elite academic study guide engine built specifically to help high school students dominate open-note tests. Your output must read naturally like it was written by an exceptionally organized top-tier student by hand. 
+        const systemInstruction = `You are an elite academic engine designed to build foolproof open-note test study guides for high school students. 
 
-MANDATORY FORMATTING STANDARDS:
+CRITICAL WRITING & TONE RULES:
 1. ZERO AI MARKDOWN ARTIFACTS: Do not wrap output in backticks (\`\`\`). Never output markdown symbol stars (**), hash signs, or code styling within the text body. Use clean all-caps formatting for section headers.
-2. CHECKBOX STUDY SYSTEM: Every critical vocabulary word, core term, law, formula, event, theorem, or concept must feature an interactive checklist line formatted precisely like:
-[ ] Term Name: Concise, high-retention definition or explanation.
-3. SOURCE ADAPTATION: The user selected this source category: ${activeSourceTextName}. Tailor the structure and layout perfectly to match how a high school student needs to study this exact type of material for an exam.
-4. TEACHER DIRECTIVE OVERRIDE: If the teacher focus box contains instructions or exact study mandates, those directives take supreme precedence across the entire layout.
-5. OPEN-NOTE READABILITY: Keep everything hyper-scannable, clean, and structured seamlessly for instant printing or pasting directly into Google Docs.`;
+2. PLAIN ENGLISH ONLY (ZERO COMPLEX JARGON): Explain everything in dead-simple, everyday language. No confusing academic vocabulary or corporate fluff. A student who has never read the book must instantly understand what the text means just by glancing at it.
+3. CHECKBOX STUDY SYSTEM: Every key term, definition, event, or concept must feature an interactive checklist line formatted precisely like:
+[ ] Term Name: Simple, direct, plain-English explanation of what it is.
+4. SELECTED SOURCE: ${activeSourceTextName}.
+5. SELECTED LAYOUT FORMAT: ${activeLayoutName}. Structure the notes entirely around this layout choice.
+6. TEACHER DIRECTIVE OVERRIDE: If the teacher focus box has instructions, make sure those answers are front and center so the user can secure an A+ instantly.
+7. OPEN-NOTE SCANNABILITY: Keep it clean, neat, and ready to paste directly into Google Docs.`;
 
-        let userQuery = `Transform this material into an elite open-note study guide.\nSelected Source Type: ${activeSourceTextName}\n`;
-        if(prompt) userQuery += `Teacher Focus / Directives: ${prompt}\n`;
+        let userQuery = `Transform this material into an elite open-note study guide.\nSource Type: ${activeSourceTextName}\nLayout Style: ${activeLayoutName}\n`;
+        if(prompt) userQuery += `Teacher Instructions / Focus: ${prompt}\n`;
         userQuery += `\nRaw Source Text:\n${text}`;
 
         try {
