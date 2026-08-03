@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note Organizer</title>
+    <title>A+ Visual Study Guide Generator</title>
     <style>
         :root {
             --bg-color: #060913;
@@ -41,11 +41,9 @@
             margin-bottom: 30px;
         }
         h1 { font-size: 2rem; margin: 0; color: #60a5fa; letter-spacing: -0.5px; }
-        .watermark { font-size: 0.85rem; color: #64748b; font-weight: 500; letter-spacing: 0.5px; }
+        .watermark { font-size: 0.85rem; color: #64748b; font-weight: 500; }
         
-        .section-group {
-            margin-bottom: 22px;
-        }
+        .section-group { margin-bottom: 22px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #94a3b8; }
         
         input[type="password"], textarea {
@@ -58,16 +56,15 @@
             font-size: 1rem;
             box-sizing: border-box;
             font-family: inherit;
-            transition: all 0.2s ease;
         }
         input[type="password"]:focus, textarea:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             outline: none;
         }
-        textarea { height: 140px; resize: vertical; }
+        textarea { height: 130px; resize: vertical; }
         
-        .counter { font-size: 0.75rem; color: #64748b; text-align: right; margin-top: 6px; font-variant-numeric: tabular-nums; }
+        .counter { font-size: 0.75rem; color: #64748b; text-align: right; margin-top: 6px; }
 
         .accordion-wrapper {
             background: var(--input-bg);
@@ -84,9 +81,7 @@
             cursor: pointer;
             font-weight: 600;
             color: #94a3b8;
-            user-select: none;
             background: rgba(13, 19, 34, 0.5);
-            transition: background 0.2s;
         }
         .accordion-header:hover { background: rgba(30, 41, 59, 0.5); color: #fff; }
         .accordion-content {
@@ -106,12 +101,9 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
-        @media(max-width: 900px) {
-            .option-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media(max-width: 600px) {
-            .option-grid { grid-template-columns: 1fr; }
-        }
+        @media(max-width: 900px) { .option-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width: 600px) { .option-grid { grid-template-columns: 1fr; } }
+        
         .option-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -140,31 +132,43 @@
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s, transform 0.1s;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: background 0.2s;
         }
         button.generate-btn:hover { background: var(--accent-hover); }
-        button.generate-btn:active { transform: scale(0.99); }
 
         .output-section {
             margin-top: 35px;
             border-top: 1px solid var(--border-color);
             padding-top: 25px;
         }
+        
+        /* THIS RENDERS THE OUTPUT AS A PRINT-READY DOCUMENT */
         .output-box {
             background: #ffffff;
-            color: #0f172a;
-            padding: 35px;
+            color: #1e293b;
+            padding: 40px;
             border-radius: 10px;
-            min-height: 320px;
-            white-space: pre-wrap;
+            min-height: 350px;
             font-family: Arial, sans-serif;
             font-size: 1rem;
-            line-height: 1.7;
-            outline: none;
+            line-height: 1.6;
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+            overflow-x: auto;
         }
-        .helper-text { font-size: 0.8rem; color: #64748b; margin-top: 8px; }
+        
+        /* STYLES INSIDE THE RENDERED OUTPUT FOR CLEAN PRINTING */
+        .output-box h2 { color: #1e40af; border-bottom: 2px solid #3b82f6; padding-bottom: 6px; margin-top: 30px; }
+        .output-box h3 { color: #1e293b; margin-top: 20px; font-size: 1.1rem; }
+        .output-box .cheat-card {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .output-box .highlight-term { font-weight: bold; color: #0f172a; }
+        
         .api-box { background: rgba(13, 19, 34, 0.7); padding: 16px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--border-color); }
     </style>
 </head>
@@ -172,132 +176,57 @@
 
 <div class="container">
     <header>
-        <h1>Note Organizer</h1>
-        <span class="watermark">Made by Mark B</span>
+        <h1>A+ Visual Study Guide Generator</h1>
+        <span class="watermark">Zero-Effort Study Mode</span>
     </header>
 
     <div class="api-box">
-        <label for="apiKey">Gemini API Key (Saved securely in browser local storage)</label>
-        <input type="password" id="apiKey" placeholder="Paste your fresh AIzaSy... key here" oninput="saveApiKey()">
+        <label for="apiKey">Gemini API Key (Saved securely in local storage)</label>
+        <input type="password" id="apiKey" placeholder="Paste your AIzaSy... key here" oninput="saveApiKey()">
         <div class="counter" style="text-align: left; margin-top: 4px;">Characters: <span id="keyCounter">0</span></div>
     </div>
 
-    <!-- WORDS-ONLY TEXT SOURCES -->
     <div class="section-group">
-        <label>1. Select Your Document Source</label>
+        <label>1. Select Document Source</label>
         <div class="accordion-wrapper">
             <div class="accordion-header" onclick="toggleAccordion('sourceContent', 'sourceArrow')">
-                <span id="selectedSourceLabel">📖 Textbook Chapter / Reading Block (Click to change source)</span>
+                <span id="selectedSourceLabel">📖 Textbook Chapter / Reading Block</span>
                 <span id="sourceArrow">▼</span>
             </div>
             <div class="accordion-content" id="sourceContent">
                 <div class="option-grid">
-                    <div class="option-card active" onclick="selectSource('textbook', '📖 Textbook Chapter / Reading Block', event)">
-                        <div class="card-title">📖 Textbook Chapter</div>
-                        <div class="card-desc">Core definitions, history blocks, and events.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('novel', '📚 Literature / Novel / Play Chapter', event)">
-                        <div class="card-title">📚 Literature / Novel</div>
-                        <div class="card-desc">Plot points, character arcs, themes, and quotes.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('primary', '📜 Historical Document / Speech / Letter', event)">
-                        <div class="card-title">📜 Historical Document</div>
-                        <div class="card-desc">Speeches, founding acts, laws, and letters.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('gov', '⚖️ Government / Civics / Ethnic Studies Reading', event)">
-                        <div class="card-title">⚖️ Gov / Civics / Ethnic Studies</div>
-                        <div class="card-desc">Policies, court cases, rights, and movements.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('article', '📰 News Article, Op-Ed, or Editorial', event)">
-                        <div class="card-title">📰 News / Editorial</div>
-                        <div class="card-desc">Current events, viewpoints, and arguments.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('lecture', '🎙️ Teacher Lecture Notes / Board Slides', event)">
-                        <div class="card-title">🎙️ Lecture / Slides</div>
-                        <div class="card-desc">Direct board points, lists, and key takeaways.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('wiki', '🏛️ Wikipedia / Reference Wiki Page', event)">
-                        <div class="card-title">🏛️ Wiki / Reference</div>
-                        <div class="card-desc">Structured factual summaries and background info.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('essay', '📝 Student Essay, DBQ, or Writing Piece', event)">
-                        <div class="card-title">📝 Essay / DBQ Writing</div>
-                        <div class="card-desc">Thesis statements, claims, and evidence logs.</div>
-                    </div>
-                    <div class="option-card" onclick="selectSource('packet', '📄 Worksheet Packet / Handout Reading', event)">
-                        <div class="card-title">📄 Worksheet Packet</div>
-                        <div class="card-desc">Short-answer passages and review questions.</div>
-                    </div>
+                    <div class="option-card active" onclick="selectSource('Textbook Chapter', event)"><div class="card-title">📖 Textbook Chapter</div></div>
+                    <div class="option-card" onclick="selectSource('Literature / Novel', event)"><div class="card-title">📚 Novel / Literature</div></div>
+                    <div class="option-card" onclick="selectSource('Historical Document', event)"><div class="card-title">📜 Historical Doc</div></div>
+                    <div class="option-card" onclick="selectSource('News Article / Editorial', event)"><div class="card-title">📰 News / Article</div></div>
+                    <div class="option-card" onclick="selectSource('Lecture / Slides', event)"><div class="card-title">🎙️ Lecture / Slides</div></div>
+                    <div class="option-card" onclick="selectSource('Worksheet Packet', event)"><div class="card-title">📄 Worksheet Packet</div></div>
                 </div>
             </div>
         </div>
-        <div class="counter" style="text-align: left; margin-top: 6px;">Source Character Count: <span id="sourceCharCount">34</span></div>
-    </div>
-
-    <!-- SETUP / FORMAT LAYOUT STYLES -->
-    <div class="section-group">
-        <label>2. Select Note Layout Style</label>
-        <div class="accordion-wrapper">
-            <div class="accordion-header" onclick="toggleAccordion('layoutContent', 'layoutArrow')">
-                <span id="selectedLayoutLabel">⚡ Ultimate Test Cheat Sheet (Click to change format)</span>
-                <span id="layoutArrow">▼</span>
-            </div>
-            <div class="accordion-content" id="layoutContent">
-                <div class="option-grid">
-                    <div class="option-card active" onclick="selectLayout('cheatsheet', '⚡ Ultimate Test Cheat Sheet', event)">
-                        <div class="card-title">⚡ Ultimate Cheat Sheet</div>
-                        <div class="card-desc">A+ grade ready: high-yield facts, bullet lookups, zero fluff.</div>
-                    </div>
-                    <div class="option-card" onclick="selectLayout('cornell', '📝 Cornell Notes Layout', event)">
-                        <div class="card-title">📝 Cornell Layout</div>
-                        <div class="card-desc">Left-side cue column and right-side detailed summary blocks.</div>
-                    </div>
-                    <div class="option-card" onclick="selectLayout('classic', '📂 Classic Outline Layout', event)">
-                        <div class="card-title">📂 Classic Outline</div>
-                        <div class="card-desc">Clean roman numeral and alphabetized structural outline.</div>
-                    </div>
-                    <div class="option-card" onclick="selectLayout('directmatch', '🎯 Direct Test-Answer Matcher', event)">
-                        <div class="card-title">🎯 Direct Answer Matcher</div>
-                        <div class="card-desc">Formatted explicitly as high-probability test questions & answers.</div>
-                    </div>
-                    <div class="option-card" onclick="selectLayout('eli5', '🧠 Dumbass-Proof Plain English', event)">
-                        <div class="card-title">🧠 Dumbass-Proof Mode</div>
-                        <div class="card-desc">Zero jargon, pure plain-English analogies anyone can ace.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="counter" style="text-align: left; margin-top: 6px;">Layout Character Count: <span id="layoutCharCount">29</span></div>
     </div>
 
     <div class="section-group">
-        <label for="rawText">Paste Raw Source Text Here</label>
-        <textarea id="rawText" placeholder="Paste your history chapter, reading passage, or article text here..." oninput="updateAllCounters()"></textarea>
+        <label for="rawText">Paste Messy Reading Material Here</label>
+        <textarea id="rawText" placeholder="Paste your massive, confusing reading blocks here..."></textarea>
         <div id="rawCounter" class="counter">Characters: 0</div>
     </div>
 
     <div class="section-group">
-        <label for="teacherPrompt">Teacher's Specific Focus & Instructions (Optional)</label>
-        <textarea id="teacherPrompt" style="height: 75px;" placeholder="e.g., Paste exact teacher test instructions: 'Questions will cover causes, dates, and effects...'" oninput="updateAllCounters()"></textarea>
-        <div id="promptCounter" class="counter">Characters: 0</div>
+        <label for="teacherPrompt">Teacher Instructions / Test Focus (Optional)</label>
+        <textarea id="teacherPrompt" style="height: 65px;" placeholder="e.g., 'Test will focus on causes and vocabulary definitions...'"></textarea>
     </div>
 
-    <button class="generate-btn" onclick="formatNotes()">Generate A+ Study Guide</button>
+    <button class="generate-btn" onclick="formatNotes()">Generate Clean Visual Cheat Sheet</button>
 
     <div class="output-section">
-        <label>Formatted Output (Ready to Copy Directly into Google Docs)</label>
-        <div id="outputDisplay" class="output-box" contenteditable="true">Your high-yield A+ study guide will materialize here...</div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="helper-text">💡 Fully editable on the fly. Click copy or select all to move straight to Google Docs.</div>
-            <div id="outputCounter" class="counter" style="margin-top: 6px;">Characters: 0</div>
-        </div>
+        <label>Print-Ready Format (Copy and Paste straight into Google Docs)</label>
+        <div id="outputDisplay" class="output-box" contenteditable="true">Your beautiful, print-ready study guide will appear here...</div>
     </div>
 </div>
 
 <script>
-    let activeSourceTextName = '📖 Textbook Chapter / Reading Block';
-    let activeLayoutName = '⚡ Ultimate Test Cheat Sheet';
-    let activeLayoutCode = 'cheatsheet';
+    let activeSource = 'Textbook Chapter';
 
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem('gemini_api_key') || '';
@@ -305,7 +234,6 @@
             document.getElementById('apiKey').value = savedKey;
             document.getElementById('keyCounter').innerText = savedKey.length;
         }
-        updateAllCounters();
     });
 
     function saveApiKey() {
@@ -321,43 +249,17 @@
         arrow.innerText = content.classList.contains('open') ? '▲' : '▼';
     }
 
-    function selectSource(type, label, event) {
-        activeSourceTextName = label;
-        document.getElementById('selectedSourceLabel').innerText = label + ' (Click to change source)';
-        const grid = event.currentTarget.parentElement;
-        grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
+    function selectSource(label, event) {
+        activeSource = label;
+        document.getElementById('selectedSourceLabel').innerText = label;
+        event.currentTarget.parentElement.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
         event.currentTarget.classList.add('active');
-        document.getElementById('sourceCharCount').innerText = label.length;
         toggleAccordion('sourceContent', 'sourceArrow');
     }
 
-    function selectLayout(type, label, event) {
-        activeLayoutName = label;
-        activeLayoutCode = type;
-        document.getElementById('selectedLayoutLabel').innerText = label + ' (Click to change format)';
-        const grid = event.currentTarget.parentElement;
-        grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        document.getElementById('layoutCharCount').innerText = label.length;
-        toggleAccordion('layoutContent', 'layoutArrow');
-    }
-
-    function updateAllCounters() {
-        const keyText = document.getElementById('apiKey').value;
-        const rawText = document.getElementById('rawText').value;
-        const promptText = document.getElementById('teacherPrompt').value;
-        const outputText = document.getElementById('outputDisplay').innerText;
-
-        document.getElementById('keyCounter').innerText = keyText.length;
-        document.getElementById('rawCounter').innerText = `Characters: ${rawText.length}`;
-        document.getElementById('promptCounter').innerText = `Characters: ${promptText.length}`;
-        document.getElementById('outputCounter').innerText = `Characters: ${outputText.length}`;
-    }
-
-    const observer = new MutationObserver(() => {
-        updateAllCounters();
+    document.getElementById('rawText').addEventListener('input', (e) => {
+        document.getElementById('rawCounter').innerText = `Characters: ${e.target.value.length}`;
     });
-    observer.observe(document.getElementById('outputDisplay'), { childList: true, subtree: true, characterData: true });
 
     async function formatNotes() {
         const apiKey = document.getElementById('apiKey').value.trim();
@@ -365,59 +267,25 @@
         const prompt = document.getElementById('teacherPrompt').value.trim();
         const output = document.getElementById('outputDisplay');
 
-        if (!apiKey) {
-            output.innerText = "Error: Please input your Gemini API key in the configuration field above.";
-            return;
-        }
-        if (!text) {
-            output.innerText = "Error: Please paste raw source text into the primary text box first.";
-            return;
-        }
+        if (!apiKey) { output.innerHTML = "<p style='color:red;'>Error: Please add your API key.</p>"; return; }
+        if (!text) { output.innerHTML = "<p style='color:red;'>Error: Please paste your reading text.</p>"; return; }
 
-        output.innerText = "Synthesizing A+ study guide...";
+        output.innerHTML = "<p style='text-align:center; color:#3b82f6; font-weight:bold;'>✨ Building your print-ready cheat sheet...</p>";
 
-        // STRICT LAYOUT-SPECIFIC INSTRUCTION BUILDER
-        let layoutInstructions = "";
+        const systemInstruction = `You are an elite academic tutor designed for students who want maximum results with minimum effort. 
 
-        if (activeLayoutCode === 'cheatsheet') {
-            layoutInstructions = `LAYOUT STYLE: ULTIMATE TEST CHEAT SHEET
-- Format with clean capitalized section headings.
-- Under each section, provide high-yield, punchy bullet points structured as: **Key Term / Concept:** Crisp, direct definition or fact that answers test questions instantly.
-- Absolutely zero code blocks, zero backticks, and zero brackets. Make it look like a pristine, professionally formatted document ready to paste right into Google Docs.`;
-        } else if (activeLayoutCode === 'cornell') {
-            layoutInstructions = `LAYOUT STYLE: CORNELL NOTES LAYOUT
-- Divide the output strictly into two visual sections:
-  1. SECTION 1: CUE QUESTIONS (List key review questions on the left side)
-  2. SECTION 2: DETAILED NOTES (Provide structured explanatory notes answering each cue question clearly)
-- Use clean headings and strong visual separation. No brackets.`;
-        } else if (activeLayoutCode === 'classic') {
-            layoutInstructions = `LAYOUT STYLE: CLASSIC OUTLINE LAYOUT
-- Use a formal hierarchical outline format (Roman numerals I, II, III for major themes; Capital letters A, B, C for sub-points; lowercase numbers 1, 2, 3 for details).
-- Keep descriptions concise and high-yield.`;
-        } else if (activeLayoutCode === 'directmatch') {
-            layoutInstructions = `LAYOUT STYLE: DIRECT TEST-ANSWER MATCHER
-- Format the output strictly as likely test questions and their exact answers.
-- Use this exact pattern:
-  Q: [Test-style question based on the text]
-  A: [Direct, precise answer]
-- Focus entirely on facts teachers test over.`;
-        } else {
-            layoutInstructions = `LAYOUT STYLE: DUMBASS-PROOF PLAIN ENGLISH
-- Explain everything as if talking to a smart friend using everyday language and clear real-world analogies.
-- Strip out heavy academic filler words while keeping 100% of the factual accuracy needed to pass.`;
-        }
+CRITICAL FORMATTING RULES:
+1. OUTPUT HTML CODE: Format your entire response using clean HTML markup elements (like <h2> headers, <p> paragraphs, and <div class="cheat-card"> elements) so it renders as a beautiful, professional study guide.
+2. DUMBASS-PROOF EXPLANATIONS: Explain everything using plain, everyday English analogies. Strip away confusing academic jargon completely.
+3. HIGH-YIELD CARD BLOCKS: Group every concept into individual card blocks styled like:
+<div class="cheat-card">
+  <span class="highlight-term">Term / Concept Name:</span> Simple, direct explanation of why this matters for the test.
+</div>
+4. ZERO MARKDOWN WRAPPERS: Do not wrap your response in markdown code blocks (\`\`\`html ... \`\`\`). Output pure raw HTML text directly so it renders visually.`;
 
-        const systemInstruction = `You are an elite academic engine designed to build gorgeous, high-grade study guides for high school students aiming for an A+.
-
-CRITICAL WRITING & FORMAT RULES:
-1. NO AI MARKDOWN ARTIFACTS: Do not wrap the output in code blocks or backticks (\`\`\`). Never use raw code symbols. Use plain text formatting with clean spacing.
-2. SOURCE TYPE: ${activeSourceTextName}.
-3. ${layoutInstructions}
-4. TEACHER DIRECTIVE OVERRIDE: If teacher instructions are provided, prioritize answering those specifics at the very top.`;
-
-        let userQuery = `Transform this material into an A+ study guide.\nSource Type: ${activeSourceTextName}\nLayout Style: ${activeLayoutName}\n`;
-        if(prompt) userQuery += `Teacher Instructions / Focus: ${prompt}\n`;
-        userQuery += `\nRaw Source Text:\n${text}`;
+        let userQuery = `Create an elite visual cheat sheet.\nSource Type: ${activeSource}\n`;
+        if(prompt) userQuery += `Teacher Focus: ${prompt}\n`;
+        userQuery += `\nSource Material:\n${text}`;
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
@@ -430,20 +298,19 @@ CRITICAL WRITING & FORMAT RULES:
             });
 
             const data = await response.json();
-            
             if (data.error) {
-                output.innerText = "API Error: " + data.error.message;
+                output.innerHTML = `<p style='color:red;'>API Error: ${data.error.message}</p>`;
                 return;
             }
 
             let rawOutput = data.candidates[0].content.parts[0].text;
             rawOutput = rawOutput.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
 
-            output.innerText = rawOutput;
-            updateAllCounters();
+            // Renders the HTML directly into the box so it looks professional instantly
+            output.innerHTML = rawOutput;
 
         } catch (error) {
-            output.innerText = "Network Error: Failed to generate study guide. Verify your API key and connection status.";
+            output.innerHTML = "<p style='color:red;'>Network error occurred. Try again.</p>";
         }
     }
 </script>
