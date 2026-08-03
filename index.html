@@ -185,7 +185,7 @@
 
     <!-- WORDS-ONLY TEXT SOURCES -->
     <div class="section-group">
-        <label>1. Select Your Document Source (History, English, Gov, Social Studies)</label>
+        <label>1. Select Your Document Source</label>
         <div class="accordion-wrapper">
             <div class="accordion-header" onclick="toggleAccordion('sourceContent', 'sourceArrow')">
                 <span id="selectedSourceLabel">📖 Textbook Chapter / Reading Block (Click to change source)</span>
@@ -237,7 +237,7 @@
 
     <!-- SETUP / FORMAT LAYOUT STYLES -->
     <div class="section-group">
-        <label>2. Select Note Layout Style (How you want it structured for your A+)</label>
+        <label>2. Select Note Layout Style</label>
         <div class="accordion-wrapper">
             <div class="accordion-header" onclick="toggleAccordion('layoutContent', 'layoutArrow')">
                 <span id="selectedLayoutLabel">⚡ Ultimate Test Cheat Sheet (Click to change format)</span>
@@ -283,11 +283,11 @@
         <div id="promptCounter" class="counter">Characters: 0</div>
     </div>
 
-    <button class="generate-btn" onclick="formatNotes()">Generate A+ Open-Note Study Guide</button>
+    <button class="generate-btn" onclick="formatNotes()">Generate Study Guide</button>
 
     <div class="output-section">
         <label>Formatted Output (Ready to Copy Directly into Google Docs)</label>
-        <div id="outputDisplay" class="output-box" contenteditable="true">Your structured, human-grade study guide will materialize here...</div>
+        <div id="outputDisplay" class="output-box" contenteditable="true">Your structured study guide will materialize here...</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div class="helper-text">💡 Fully editable on the fly. Click copy or select all to move straight to Google Docs.</div>
             <div id="outputCounter" class="counter" style="margin-top: 6px;">Characters: 0</div>
@@ -324,7 +324,6 @@
     function selectSource(type, label, event) {
         activeSourceTextName = label;
         document.getElementById('selectedSourceLabel').innerText = label + ' (Click to change source)';
-        // find parent card grid and clear active
         const grid = event.currentTarget.parentElement;
         grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
         event.currentTarget.classList.add('active');
@@ -374,19 +373,19 @@
             return;
         }
 
-        output.innerText = "Synthesizing ultimate A+ open-note study guide...";
+        output.innerText = "Synthesizing study guide...";
 
-        const systemInstruction = `You are an elite academic engine designed to build foolproof open-note test study guides for high school students. 
+        const systemInstruction = `You are an elite academic engine designed to build clean, human-written study guides for high school students. 
 
-CRITICAL WRITING & TONE RULES:
+CRITICAL WRITING & FORMAT RULES:
 1. ZERO AI MARKDOWN ARTIFACTS: Do not wrap output in backticks (\`\`\`). Never output markdown symbol stars (**), hash signs, or code styling within the text body. Use clean all-caps formatting for section headers.
-2. PLAIN ENGLISH ONLY (ZERO COMPLEX JARGON): Explain everything in dead-simple, everyday language. No confusing academic vocabulary or corporate fluff. A student who has never read the book must instantly understand what the text means just by glancing at it.
+2. PLAIN ENGLISH ONLY: Explain everything in dead-simple, everyday language. No confusing academic vocabulary or corporate fluff. Keep it completely natural.
 3. CHECKBOX STUDY SYSTEM: Every key term, definition, event, or concept must feature an interactive checklist line formatted precisely like:
 [ ] Term Name: Simple, direct, plain-English explanation of what it is.
 4. SELECTED SOURCE: ${activeSourceTextName}.
 5. SELECTED LAYOUT FORMAT: ${activeLayoutName}. Structure the notes entirely around this layout choice.
-6. TEACHER DIRECTIVE OVERRIDE: If the teacher focus box has instructions, make sure those answers are front and center so the user can secure an A+ instantly.
-7. OPEN-NOTE SCANNABILITY: Keep it clean, neat, and ready to paste directly into Google Docs.`;
+6. TEACHER DIRECTIVE OVERRIDE: If the teacher focus box has instructions, make sure those answers are front and center.
+7. SCANNABILITY: Keep it clean, neat, and ready to print or paste directly into Google Docs.`;
 
         let userQuery = `Transform this material into an elite open-note study guide.\nSource Type: ${activeSourceTextName}\nLayout Style: ${activeLayoutName}\n`;
         if(prompt) userQuery += `Teacher Instructions / Focus: ${prompt}\n`;
