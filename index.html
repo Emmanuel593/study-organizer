@@ -213,7 +213,7 @@
         </div>
         
         <div class="accordion-wrapper" style="margin-top: 6px;">
-            <div class="accordion-header" onclick="toggleAccordion('sourceContent', 'sourceArrow')">
+            <div class="accordion-header" onclick="toggleDropdown('sourceContent', 'sourceArrow')">
                 <span id="selectedSourceLabel">📖 Textbook Chapter / Reading Block</span>
                 <span id="sourceArrow">▼</span>
             </div>
@@ -265,7 +265,7 @@
     <div class="section-group">
         <label>2. Select Note Layout Style</label>
         <div class="accordion-wrapper">
-            <div class="accordion-header" onclick="toggleAccordion('layoutContent', 'layoutArrow')">
+            <div class="accordion-header" onclick="toggleDropdown('layoutContent', 'layoutArrow')">
                 <span id="selectedLayoutLabel">⚡ Ultimate Test Cheat Sheet</span>
                 <span id="layoutArrow">▼</span>
             </div>
@@ -345,16 +345,16 @@
         document.getElementById('keyCounter').innerText = key.length;
     }
 
-    function toggleAccordion(contentId, arrowId) {
+    function toggleDropdown(contentId, arrowId) {
         const content = document.getElementById(contentId);
         const arrow = document.getElementById(arrowId);
         const isOpen = content.classList.contains('open');
         
-        // Close all accordions first
+        // Close both dropdowns cleanly first
         document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open'));
         document.querySelectorAll('[id$="Arrow"]').forEach(el => el.innerText = '▼');
 
-        // Toggle target if it wasn't open
+        // If it wasn't open before, open it now
         if (!isOpen) {
             content.classList.add('open');
             arrow.innerText = '▲';
@@ -367,7 +367,6 @@
         const grid = document.getElementById('sourceGrid');
         grid.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
         
-        // Find correct card element even if click hits child elements
         let card = event.target.closest('.option-card');
         if (card) card.classList.add('active');
 
@@ -375,7 +374,7 @@
         if(event.isTrusted) {
             document.getElementById('autoStatus').style.display = 'none';
         }
-        toggleAccordion('sourceContent', 'sourceArrow');
+        toggleDropdown('sourceContent', 'sourceArrow');
     }
 
     function selectLayout(label, event) {
@@ -388,7 +387,7 @@
         if (card) card.classList.add('active');
 
         document.getElementById('layoutCharCount').innerText = label.length;
-        toggleAccordion('layoutContent', 'layoutArrow');
+        toggleDropdown('layoutContent', 'layoutArrow');
     }
 
     function updateAllCounters() {
