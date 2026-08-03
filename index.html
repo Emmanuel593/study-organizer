@@ -62,7 +62,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             outline: none;
         }
-        textarea { height: 130px; resize: vertical; }
+        textarea { height: 140px; resize: vertical; }
         
         .counter { font-size: 0.75rem; color: #64748b; text-align: right; margin-top: 6px; }
 
@@ -157,14 +157,11 @@
         }
         
         .output-box h2 { color: #1e40af; border-bottom: 2px solid #3b82f6; padding-bottom: 6px; margin-top: 30px; font-size: 1.3rem; }
-        .output-box h3 { color: #1e293b; margin-top: 20px; font-size: 1.05rem; }
-        .output-box ul { padding-left: 20px; margin-top: 8px; margin-bottom: 8px; }
-        .output-box li { margin-bottom: 6px; }
         .output-box .cheat-card {
             background: #f8fafc;
             border-left: 4px solid #3b82f6;
             padding: 10px 14px;
-            margin: 8px 0;
+            margin: 10px 0;
             border-radius: 0 8px 8px 0;
         }
         .output-box .highlight-term { font-weight: bold; color: #0f172a; }
@@ -177,7 +174,7 @@
 <div class="container">
     <header>
         <h1>A+ Visual Study Guide Generator</h1>
-        <span class="watermark">Human Note-Taker Mode</span>
+        <span class="watermark">Ultimate Cheat Sheet Mode</span>
     </header>
 
     <div class="api-box">
@@ -207,46 +204,26 @@
     </div>
 
     <div class="section-group">
-        <label>2. Select Note Layout Style</label>
-        <div class="accordion-wrapper">
-            <div class="accordion-header" onclick="toggleAccordion('layoutContent', 'layoutArrow')">
-                <span id="selectedLayoutLabel">⚡ Ultimate Test Cheat Sheet</span>
-                <span id="layoutArrow">▼</span>
-            </div>
-            <div class="accordion-content" id="layoutContent">
-                <div class="option-grid">
-                    <div class="option-card active" onclick="selectLayout('cheatsheet', '⚡ Ultimate Test Cheat Sheet', event)"><div class="card-title">⚡ Ultimate Cheat Sheet</div></div>
-                    <div class="option-card" onclick="selectLayout('cornell', '📝 Cornell Layout', event)"><div class="card-title">📝 Cornell Layout</div></div>
-                    <div class="option-card" onclick="selectLayout('directmatch', '🎯 Direct Answer Matcher', event)"><div class="card-title">🎯 Direct Answers</div></div>
-                    <div class="option-card" onclick="selectLayout('eli5', '🧠 Dumbass-Proof Plain English', event)"><div class="card-title">🧠 Dumbass-Proof Mode</div></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-group">
         <label for="rawText">Paste Messy Reading Material Here</label>
-        <textarea id="rawText" placeholder="Paste your massive, confusing reading blocks here..."></textarea>
+        <textarea id="rawText" placeholder="Paste your massive, confusing textbook chapters here..."></textarea>
         <div id="rawCounter" class="counter">Characters: 0</div>
     </div>
 
     <div class="section-group">
         <label for="teacherPrompt">Teacher Instructions / Test Focus (Optional)</label>
-        <textarea id="teacherPrompt" style="height: 65px;" placeholder="e.g., 'Test will focus on causes and vocabulary definitions...'"></textarea>
+        <textarea id="teacherPrompt" style="height: 65px;" placeholder="e.g., 'Test will focus on definitions and key concepts...'"></textarea>
     </div>
 
-    <button class="generate-btn" onclick="formatNotes()">Generate Clean Teacher-Style Notes</button>
+    <button class="generate-btn" onclick="formatNotes()">Generate A+ Ultimate Cheat Sheet</button>
 
     <div class="output-section">
         <label>Print-Ready Format (Copy and Paste straight into Google Docs)</label>
-        <div id="outputDisplay" class="output-box" contenteditable="true">Your clean, human-style study notes will appear here...</div>
+        <div id="outputDisplay" class="output-box" contenteditable="true">Your ultra-simple, test-ready cheat sheet will appear here...</div>
     </div>
 </div>
 
 <script>
     let activeSource = 'Textbook Chapter';
-    let activeLayoutCode = 'cheatsheet';
-    let activeLayoutName = '⚡ Ultimate Test Cheat Sheet';
 
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem('gemini_api_key') || '';
@@ -266,7 +243,7 @@
         const content = document.getElementById(contentId);
         const arrow = document.getElementById(arrowId);
         content.classList.toggle('open');
-        arrow.innerText = content.classList.contains('open') ? '▲' : '▼';
+        arrow.innerText = content.classList.contains('open' ) ? '▲' : '▼';
     }
 
     function selectSource(label, event) {
@@ -275,15 +252,6 @@
         event.currentTarget.parentElement.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
         event.currentTarget.classList.add('active');
         toggleAccordion('sourceContent', 'sourceArrow');
-    }
-
-    function selectLayout(type, label, event) {
-        activeLayoutCode = type;
-        activeLayoutName = label;
-        document.getElementById('selectedLayoutLabel').innerText = label;
-        event.currentTarget.parentElement.querySelectorAll('.option-card').forEach(opt => opt.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        toggleAccordion('layoutContent', 'layoutArrow');
     }
 
     document.getElementById('rawText').addEventListener('input', (e) => {
@@ -299,29 +267,21 @@
         if (!apiKey) { output.innerHTML = "<p style='color:red;'>Error: Please add your API key.</p>"; return; }
         if (!text) { output.innerHTML = "<p style='color:red;'>Error: Please paste your reading text.</p>"; return; }
 
-        output.innerHTML = "<p style='text-align:center; color:#3b82f6; font-weight:bold;'>✨ Structuring clean human notes...</p>";
+        output.innerHTML = "<p style='text-align:center; color:#3b82f6; font-weight:bold;'>✨ Stripping jargon and building your cheat sheet...</p>";
 
-        let layoutRules = "";
-        if (activeLayoutCode === 'cheatsheet') {
-            layoutRules = "Format as clear topic sections containing short bullet points. Bold the main term first, followed by a direct fact.";
-        } else if (activeLayoutCode === 'cornell') {
-            layoutRules = "Format with short review questions on the left column or block and crisp 1-sentence answers on the right block.";
-        } else if (activeLayoutCode === 'directmatch') {
-            layoutRules = "Format as direct test questions and exact answers.";
-        } else {
-            layoutRules = "Format using everyday casual language with real-world analogies. Completely zero textbook vocabulary.";
-        }
+        const systemInstruction = `You are an elite academic engine that translates complex, confusing textbooks into ultra-simple, dead-clear cheat sheets designed to score an A+.
 
-        const systemInstruction = `You are a brilliant human note-taker and teacher creating a study handout.
+CRITICAL RULES:
+1. NO JARGON / PLAIN ENGLISH ONLY: Explain everything like you are talking to a smart friend using everyday language. If the text uses a massive corporate or academic word, translate it instantly into what it actually means in real life.
+2. STRICTLY NO EM DASHES: You are banned from using em dashes (\`—\`), en dashes (\`–\`), or semicolons. Use basic periods, commas, or normal sentence breaks.
+3. VISUAL CARD STRUCTURE: Group the facts into visual HTML blocks using this exact template structure:
+<h2>Topic Header Name</h2>
+<div class="cheat-card">
+  <span class="highlight-term">Bold Concept Term:</span> Direct, plain-English answer or definition explaining exactly how this works for the test.
+</div>
+4. ZERO MARKDOWN WRAPPERS: Do not use backticks (\`\`\`html). Output raw HTML elements directly so it drops cleanly into the visual box.`;
 
-CRITICAL FORMATTING & STYLE RULES:
-1. NO EM DASHES OR SPECIAL PUNCTUATION: You are strictly banned from using em dashes (\`—\`), en dashes (\`–\`), or semicolons. Use periods, commas, or bullet points only.
-2. HUMAN NOTE STYLE: Write like a human student or teacher making a clean review sheet. Keep sentences short, clean, and punchy. No filler words.
-3. OUTPUT CLEAN HTML: Format using standard HTML elements (<h2> headers, <div class="cheat-card"> blocks, and <ul> lists) so it looks professionally designed when pasted into Google Docs.
-4. LAYOUT STYLE (${activeLayoutName}): ${layoutRules}
-5. ZERO MARKDOWN WRAPPERS: Output pure raw HTML elements directly without any backticks (\`\`\`).`;
-
-        let userQuery = `Create clean study notes.\nSource Type: ${activeSource}\nLayout Style: ${activeLayoutName}\n`;
+        let userQuery = `Create an ultimate cheat sheet from this material.\nSource Type: ${activeSource}\n`;
         if(prompt) userQuery += `Teacher Focus: ${prompt}\n`;
         userQuery += `\nSource Material:\n${text}`;
 
