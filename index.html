@@ -27,26 +27,26 @@
         #output { background: #0d1322; color: #f1f5f9; padding: 30px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 100px; border: 1px solid #1e293b; box-sizing: border-box; }
         
         /* Document Layout inside Output */
-        .doc-title { font-size: 1.8rem; font-weight: bold; color: #f1f5f9; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0; }
+        .doc-title { font-size: 1.8rem; font-weight: bold; color: #f1f5f9; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0; page-break-after: avoid; break-after: avoid; }
         .cheat-card { background: #f8fafc; color: #1e293b; border-left: 4px solid #3b82f6; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; }
         .cheat-card h2, .cheat-card h3 { margin-top: 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
         
         .quiz-card { background: #f1f5f9; color: #1e293b; border-left: 4px solid #10b981; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; }
         .quiz-card h2, .quiz-card h3 { margin-top: 0; color: #065f46; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; }
-        .quiz-item { margin-bottom: 15px; background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .quiz-item { margin-bottom: 15px; background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; page-break-inside: avoid; break-inside: avoid; }
         .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 8px; }
         .quiz-answer { color: #047857; background: #ecfdf5; padding: 10px; border-radius: 4px; border-left: 3px solid #10b981; font-weight: 500; margin-top: 5px; }
 
-        /* Print Layout: Forces clean white paper and keeps blocks together nicely */
+        /* Print Layout: Locks white background strictly to printed paper, forces title to stay on page 1 with content */
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; }
-            .container { max-width: 100% !important; background: white !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
+            .container { max-width: 100% !important; background: #ffffff !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
             h1, label, input, textarea, select, button, .btn-row, .grid-controls, .checkbox-label { display: none !important; }
-            #output { background: white !important; color: black !important; border: none !important; margin-top: 0 !important; padding: 0 !important; box-shadow: none !important; }
-            .doc-title { color: black !important; border-bottom: 2px solid black !important; }
-            .cheat-card, .quiz-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; break-inside: avoid !important; background: #fff !important; color: black !important; margin-bottom: 20px !important; box-shadow: none !important; }
-            .quiz-item { background: #fff !important; border: 1px solid #cbd5e1 !important; }
-            .quiz-answer { background: #f8fafc !important; color: black !important; border-left: 3px solid #64748b !important; }
+            #output { background: #ffffff !important; color: #000000 !important; border: none !important; margin-top: 0 !important; padding: 0 !important; box-shadow: none !important; }
+            .doc-title { color: #000000 !important; border-bottom: 2px solid #000000 !important; page-break-after: avoid !important; break-after: avoid !important; }
+            .cheat-card, .quiz-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; break-inside: avoid !important; background: #ffffff !important; color: #000000 !important; margin-bottom: 20px !important; box-shadow: none !important; }
+            .quiz-item { background: #ffffff !important; border: 1px solid #cbd5e1 !important; }
+            .quiz-answer { background: #f8fafc !important; color: #000000 !important; border-left: 3px solid #64748b !important; }
         }
     </style>
 </head>
@@ -113,8 +113,8 @@
         CRITICAL STRUCTURAL INSTRUCTIONS:
         1. Start your response with a clean main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
         2. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        3. Wrap core study notes inside clean HTML elements with class "cheat-card". Keep the layout logical, organized, and ensure the summary section stays grouped together at the bottom of the notes, not pushed onto random separate pages.
-        4. ${includeQuiz ? 'Include a Practice Quiz section wrapped inside an HTML element with class "quiz-card". Every single quiz question MUST have its direct answer clearly printed right beneath it. Use this exact structure for every question:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
+        3. Wrap core study notes inside clean HTML elements with class "cheat-card". Keep the layout logical, organized, and ensure the summary section stays grouped together at the bottom of the notes.
+        4. ${includeQuiz ? 'Include a Practice Quiz section wrapped inside an HTML element with class "quiz-card". Every single quiz question MUST have its direct answer fully written out and printed right beneath it. Use this exact structure for every question:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
         5. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
         Source Material: ${text}`;
