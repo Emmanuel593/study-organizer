@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Generator</title>
+    <title>A+ Study Binder Generator</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #060913; color: #f1f5f9; padding: 20px; margin: 0; }
         .container { max-width: 900px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; box-sizing: border-box; }
@@ -18,43 +18,25 @@
         button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-        .export-btn { background: #10b981; flex: 1; padding: 16px; font-size: 1.05rem; margin-top: 0; }
-        .export-btn:hover { background: #059669; }
-        .print-btn { background: #8b5cf6; flex: 1; padding: 16px; font-size: 1.05rem; margin-top: 0; }
-        .print-btn:hover { background: #7c3aed; }
+        /* Clean Binder-Ready Output Area */
+        #output { background: #ffffff; color: #1e293b; padding: 40px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 150px; border: 1px solid #cbd5e1; box-sizing: border-box; user-select: text; }
         
-        /* Fixed output background and sizing so edges never turn white unexpectedly */
-        #output { background: #0d1322; color: #f1f5f9; padding: 30px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 100px; border: 1px solid #1e293b; box-sizing: border-box; }
+        /* Stacked Typography Optimized for Binder Printing and Google Docs */
+        .doc-title { font-size: 22px; font-weight: bold; color: #0f172a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 20px; margin-top: 0; }
+        .cheat-card { background: #ffffff; color: #1e293b; border-left: 4px solid #2563eb; padding: 0 0 0 15px; margin-bottom: 25px; }
+        .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #1e293b; font-size: 16px; font-weight: bold; }
+        .cheat-card p, .cheat-card ul { margin-top: 0; color: #334155; }
         
-        /* Clean Cornell & Standard Notes Cards */
-        .cheat-card { background: #f8fafc; color: #1e293b; border-left: 4px solid #3b82f6; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; }
-        .cheat-card h3 { margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
-        
-        /* Interactive Quiz Card */
-        .quiz-card { background: #f1f5f9; color: #1e293b; border-left: 4px solid #10b981; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; }
-        .quiz-card h3 { margin-top: 0; color: #065f46; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; }
-        .quiz-item { margin-bottom: 15px; }
-        .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 5px; }
-        .quiz-answer { color: #047857; background: #e6f4ed; padding: 8px 12px; border-radius: 4px; display: none; margin-top: 5px; font-weight: 500; }
-        .reveal-btn { background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-top: 5px; }
-        .reveal-btn:hover { background: #047857; }
-
-        /* Print Layout Optimizations (Prevents page cut-offs, forces pure white printable paper layout) */
-        @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; }
-            .container { max-width: 100% !important; background: white !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
-            h1, label, input, textarea, select, button, .btn-row, .grid-controls, .checkbox-label { display: none !important; }
-            #output { background: white !important; color: black !important; border: none !important; margin-top: 0 !important; padding: 0 !important; box-shadow: none !important; }
-            .cheat-card, .quiz-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; break-inside: avoid !important; background: #fff !important; color: black !important; margin-bottom: 20px !important; }
-            .quiz-answer { display: block !important; background: #f1f5f9 !important; border: 1px dashed #94a3b8 !important; color: black !important; }
-            .reveal-btn { display: none !important; }
-        }
+        .quiz-card { background: #ffffff; color: #1e293b; border-left: 4px solid #059669; padding: 0 0 0 15px; margin-bottom: 25px; }
+        .quiz-card h3 { margin-top: 0; margin-bottom: 12px; color: #065f46; font-size: 16px; font-weight: bold; }
+        .quiz-item { margin-bottom: 15px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 6px; }
+        .quiz-answer { color: #047857; background: #ecfdf5; padding: 8px; border-radius: 4px; border-left: 3px solid #10b981; font-weight: 500; margin-top: 4px; display: block !important; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 id="appTitle">Study Generator</h1>
+    <h1 id="appTitle">A+ Binder Study Generator</h1>
     
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="Paste your API Key">
@@ -63,27 +45,21 @@
         <div>
             <label>Note Format Style</label>
             <select id="formatStyle">
-                <option value="Cornell Notes Format" selected>Cornell Notes Format (Cues, Structured Notes, Summary)</option>
-                <option value="Standard Clean Notes">Standard Clean Notes & Bullet Points</option>
+                <option value="Clean Stacked Cornell-Style Notes" selected>Clean Stacked Notes (Topic Headings Stacked Above Explanations)</option>
             </select>
         </div>
     </div>
 
     <label class="checkbox-label">
-        <input type="checkbox" id="includeQuiz" checked> Include Interactive Practice Quiz
+        <input type="checkbox" id="includeQuiz" checked> Include Practice Quiz & Test Answers (For Binder Reference)
     </label>
 
-    <label>Source Text / Article / Transcript</label>
-    <textarea id="rawText" rows="7" placeholder="Paste study text here..."></textarea>
+    <label>Source Text / Article / Assignment Transcript</label>
+    <textarea id="rawText" rows="7" placeholder="Paste messy assignment text or reading material here..."></textarea>
 
     <button onclick="generate()">Generate Study Guide</button>
     
-    <div class="btn-row">
-        <button class="export-btn" onclick="exportTextFile()">Download Text Document (.txt)</button>
-        <button class="print-btn" onclick="triggerPrint()">Print Study Guide</button>
-    </div>
-    
-    <div id="output">Generated study content will appear here...</div>
+    <div id="output">Generated binder material will appear here... Highlight and copy this directly into your Google Doc or print it out.</div>
 </div>
 
 <script>
@@ -107,16 +83,16 @@
         }
 
         localStorage.setItem('gemini_api_key', apiKey);
-        output.innerHTML = "Generating study material (retrying automatically if busy)... Please wait.";
+        output.innerHTML = "Generating top-tier binder material... Please wait.";
 
-        const prompt = `Act as an expert tutor and study assistant. 
+        const prompt = `Act as an expert academic tutor helping a student secure an A+ grade on open-note tests. 
         Note Format Style Requested: ${formatStyle}.
 
         CRITICAL INSTRUCTIONS:
-        1. Parse the provided source text completely. DO NOT repeat, echo, or include the source title, the format style name, or setting configurations at the top of your response. Begin directly with the generated study content.
+        1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
         2. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        3. Wrap core study notes inside clean HTML elements with class "cheat-card".
-        4. ${includeQuiz ? 'Include a Practice Quiz section wrapped inside an HTML element with class "quiz-card". Every quiz question must include both the question AND its direct answer provided underneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <button class="reveal-btn" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Show Answer</button>\n               <div class="quiz-answer">Answer text here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
+        3. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear heading followed by clean, organized explanatory text stacked naturally underneath in simple paragraphs or bullet points. Include a comprehensive summary block at the end.
+        4. ${includeQuiz ? 'Include a Practice Quiz and Test Review section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
         5. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
         Source Material: ${text}`;
@@ -160,36 +136,6 @@
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
         }
     }
-
-    function exportTextFile() {
-        const outputElement = document.getElementById('output');
-        const textContent = outputElement.innerText;
-        if (!textContent || textContent.includes("Generated study content will appear here...")) {
-            alert("No content available to export!");
-            return;
-        }
-
-        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'study-guide.txt';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    function triggerPrint() {
-        const outputElement = document.getElementById('output');
-        if (!outputElement.innerText || outputElement.innerText.includes("Generated study content will appear here...")) {
-            alert("No content available to print!");
-            return;
-        }
-        window.print();
-    }
 </script>
 </body>
 </html>
-
-```
