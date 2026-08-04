@@ -5,40 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A+ Binder Study Generator</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #060913; color: #f1f5f9; padding: 20px; margin: 0; }
-        .container { max-width: 900px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; box-sizing: border-box; }
-        h1 { color: #3b82f6; margin-top: 0; }
-        label { display: block; margin: 12px 0 5px; color: #94a3b8; font-weight: bold; font-size: 0.9rem; }
-        input, textarea { width: 100%; padding: 12px; background: #020617; color: white; border: 1px solid #1e293b; border-radius: 8px; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0b0f19; color: #f8fafc; padding: 25px; margin: 0; }
+        .container { max-width: 850px; margin: auto; background: #111827; padding: 35px; border-radius: 16px; border: 1px solid #1f2937; box-shadow: 0 10px 25px rgba(0,0,0,0.3); box-sizing: border-box; }
+        h1 { color: #60a5fa; margin-top: 0; font-size: 1.6rem; letter-spacing: -0.025em; }
+        label { display: block; margin: 16px 0 6px; color: #9ca3af; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        input, textarea { width: 100%; padding: 14px; background: #030712; color: white; border: 1px solid #1f2937; border-radius: 10px; box-sizing: border-box; font-size: 0.95rem; transition: border-color 0.2s; }
+        input:focus, textarea:focus { outline: none; border-color: #3b82f6; }
         
-        .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #f1f5f9; font-weight: normal; margin-top: 15px; background: #020617; padding: 12px 15px; border-radius: 8px; border: 1px solid #1e293b; }
-        .checkbox-label input { width: auto; margin: 0; cursor: pointer; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e5e7eb; font-weight: normal; margin-top: 18px; background: #030712; padding: 14px 18px; border-radius: 10px; border: 1px solid #1f2937; }
+        .checkbox-label input { width: auto; margin: 0; cursor: pointer; transform: scale(1.1); }
 
-        button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
-        button:hover { background: #2563eb; }
+        button { width: 100%; padding: 16px; background: #2563eb; color: white; border: none; border-radius: 10px; margin-top: 20px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: background 0.2s, transform 0.1s; }
+        button:hover { background: #1d4ed8; }
+        button:active { transform: scale(0.99); }
         
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        .copy-btn { background: #10b981; flex: 1; padding: 14px; font-weight: bold; border-radius: 8px; border: none; color: white; cursor: pointer; }
-        .copy-btn:hover { background: #059669; }
+        .btn-row { display: flex; gap: 12px; margin-top: 15px; }
+        .copy-btn { background: #059669; flex: 1; padding: 15px; font-weight: 600; border-radius: 10px; border: none; color: white; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+        .copy-btn:hover { background: #047857; }
 
-        /* Output Area optimized so Google Docs reads standard text smoothly via clipboard */
-        #output { background: #ffffff; color: #1e293b; padding: 40px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 150px; border: 1px solid #cbd5e1; box-sizing: border-box; user-select: text; }
+        /* Crisp, Minimalist Print & Binder Style Preview Area */
+        #output { background: #ffffff; color: #111827; padding: 45px; border-radius: 12px; margin-top: 30px; line-height: 1.7; min-height: 150px; border: 1px solid #e5e7eb; box-sizing: border-box; user-select: text; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
-        .doc-title { font-size: 22px; font-weight: bold; color: #0f172a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 20px; margin-top: 0; }
-        .cheat-card { background: #ffffff; color: #1e293b; border-left: 4px solid #2563eb; padding: 0 0 0 15px; margin-bottom: 25px; }
-        .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #1e293b; font-size: 16px; font-weight: bold; }
-        .cheat-card p, .cheat-card ul { margin-top: 0; color: #334155; }
+        .doc-title { font-size: 24px; font-weight: 700; color: #111827; border-bottom: 2px solid #111827; padding-bottom: 12px; margin-bottom: 25px; margin-top: 0; letter-spacing: -0.02em; }
+        .cheat-card { background: #ffffff; color: #1f2937; border-left: 3px solid #2563eb; padding: 0 0 0 18px; margin-bottom: 25px; }
+        .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #111827; font-size: 17px; font-weight: 600; }
+        .cheat-card p, .cheat-card ul { margin-top: 0; color: #4b5563; font-size: 0.95rem; }
+        .cheat-card li { margin-bottom: 6px; }
         
-        .quiz-card { background: #ffffff; color: #1e293b; border-left: 4px solid #059669; padding: 0 0 0 15px; margin-bottom: 25px; }
-        .quiz-card h3 { margin-top: 0; margin-bottom: 12px; color: #065f46; font-size: 16px; font-weight: bold; }
-        .quiz-item { margin-bottom: 15px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 6px; }
-        .quiz-answer { color: #047857; background: #ecfdf5; padding: 8px; border-radius: 4px; border-left: 3px solid #10b981; font-weight: 500; margin-top: 4px; display: block !important; }
+        .quiz-card { background: #ffffff; color: #1f2937; border-left: 3px solid #059669; padding: 0 0 0 18px; margin-bottom: 25px; }
+        .quiz-card h3 { margin-top: 0; margin-bottom: 15px; color: #065f46; font-size: 17px; font-weight: 600; }
+        .quiz-item { margin-bottom: 16px; background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .quiz-question { font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 0.95rem; }
+        .quiz-answer { color: #065f46; background: #ecfdf5; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #10b981; font-weight: 500; margin-top: 8px; display: block !important; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 id="appTitle">A+ Binder Study Generator</h1>
+    <h1>A+ Binder Study Generator</h1>
     
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="Paste your API Key">
@@ -48,7 +51,7 @@
     </label>
 
     <label>Source Text / Article / Assignment Transcript</label>
-    <textarea id="rawText" rows="7" placeholder="Paste messy assignment text or reading material here..."></textarea>
+    <textarea id="rawText" rows="7" placeholder="Paste assignment text or reading material here..."></textarea>
 
     <button onclick="generate()">Generate Study Guide</button>
     
@@ -86,9 +89,10 @@
         CRITICAL INSTRUCTIONS:
         1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
         2. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        3. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear heading followed by clean, organized explanatory text stacked naturally underneath in simple paragraphs or bullet points. Include a comprehensive summary block at the end.
-        4. ${includeQuiz ? 'Include a Practice Quiz and Test Review section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
-        5. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
+        3. Structure core notes into exceptionally clean, uncluttered vertical blocks using the "cheat-card" class. Each block must feature a clear, bold heading followed by well-spaced, highly legible explanatory text or concise bullet points. 
+        4. Include a dedicated "Executive Summary" card summarizing the core concepts at the end of the notes block.
+        5. ${includeQuiz ? 'Include a Practice Quiz and Test Review section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
+        6. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
         Source Material: ${text}`;
 
@@ -140,7 +144,6 @@
         }
 
         try {
-            // Forces Google Docs-friendly rich HTML payload onto the system clipboard
             const htmlContent = outputElement.innerHTML;
             const textContent = outputElement.innerText;
             
@@ -150,9 +153,8 @@
             });
 
             await navigator.clipboard.write([clipboardItem]);
-            alert("Success! Just go into your Google Doc, press Ctrl+V (or Cmd+V), and it will paste cleanly with formatting intact.");
+            alert("Success! Go into your Google Doc, press Ctrl+V (or Cmd+V), and it will paste cleanly.");
         } catch (err) {
-            // Fallback plain text copy if browser security restricts rich clipboard
             navigator.clipboard.writeText(outputElement.innerText);
             alert("Copied as plain text to your clipboard! Paste directly into your Google Doc.");
         }
