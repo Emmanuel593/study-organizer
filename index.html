@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A+ Study Binder Generator</title>
+    <title>A+ Binder Study Generator</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #060913; color: #f1f5f9; padding: 20px; margin: 0; }
         .container { max-width: 900px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; box-sizing: border-box; }
         h1 { color: #3b82f6; margin-top: 0; }
         label { display: block; margin: 12px 0 5px; color: #94a3b8; font-weight: bold; font-size: 0.9rem; }
-        .grid-controls { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        input, textarea, select { width: 100%; padding: 12px; background: #020617; color: white; border: 1px solid #1e293b; border-radius: 8px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; background: #020617; color: white; border: 1px solid #1e293b; border-radius: 8px; box-sizing: border-box; }
         
         .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #f1f5f9; font-weight: normal; margin-top: 15px; background: #020617; padding: 12px 15px; border-radius: 8px; border: 1px solid #1e293b; }
         .checkbox-label input { width: auto; margin: 0; cursor: pointer; }
@@ -18,10 +17,13 @@
         button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         
-        /* Clean Binder-Ready Output Area */
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        .copy-btn { background: #10b981; flex: 1; padding: 14px; font-weight: bold; border-radius: 8px; border: none; color: white; cursor: pointer; }
+        .copy-btn:hover { background: #059669; }
+
+        /* Output Area optimized so Google Docs reads standard text smoothly via clipboard */
         #output { background: #ffffff; color: #1e293b; padding: 40px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 150px; border: 1px solid #cbd5e1; box-sizing: border-box; user-select: text; }
         
-        /* Stacked Typography Optimized for Binder Printing and Google Docs */
         .doc-title { font-size: 22px; font-weight: bold; color: #0f172a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 20px; margin-top: 0; }
         .cheat-card { background: #ffffff; color: #1e293b; border-left: 4px solid #2563eb; padding: 0 0 0 15px; margin-bottom: 25px; }
         .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #1e293b; font-size: 16px; font-weight: bold; }
@@ -40,15 +42,6 @@
     
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="Paste your API Key">
-    
-    <div class="grid-controls">
-        <div>
-            <label>Note Format Style</label>
-            <select id="formatStyle">
-                <option value="Clean Stacked Cornell-Style Notes" selected>Clean Stacked Notes (Topic Headings Stacked Above Explanations)</option>
-            </select>
-        </div>
-    </div>
 
     <label class="checkbox-label">
         <input type="checkbox" id="includeQuiz" checked> Include Practice Quiz & Test Answers (For Binder Reference)
@@ -59,7 +52,11 @@
 
     <button onclick="generate()">Generate Study Guide</button>
     
-    <div id="output">Generated binder material will appear here... Highlight and copy this directly into your Google Doc or print it out.</div>
+    <div class="btn-row">
+        <button class="copy-btn" onclick="copyForGoogleDocs()">Copy Clean Text for Google Docs</button>
+    </div>
+
+    <div id="output">Generated binder material will appear here...</div>
 </div>
 
 <script>
@@ -73,7 +70,6 @@
     async function generate() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const text = document.getElementById('rawText').value.trim();
-        const formatStyle = document.getElementById('formatStyle').value;
         const includeQuiz = document.getElementById('includeQuiz').checked;
         const output = document.getElementById('output');
 
@@ -86,7 +82,6 @@
         output.innerHTML = "Generating top-tier binder material... Please wait.";
 
         const prompt = `Act as an expert academic tutor helping a student secure an A+ grade on open-note tests. 
-        Note Format Style Requested: ${formatStyle}.
 
         CRITICAL INSTRUCTIONS:
         1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
@@ -134,6 +129,32 @@
             output.innerHTML = rawHtml;
         } else {
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
+        }
+    }
+
+    async function copyForGoogleDocs() {
+        const outputElement = document.getElementById('output');
+        if (!outputElement || outputElement.innerText.includes("Generated binder material will appear here...")) {
+            alert("Nothing to copy yet! Generate your notes first.");
+            return;
+        }
+
+        try {
+            // Forces Google Docs-friendly rich HTML payload onto the system clipboard
+            const htmlContent = outputElement.innerHTML;
+            const textContent = outputElement.innerText;
+            
+            const clipboardItem = new ClipboardItem({
+                "text/html": new Blob([htmlContent], { type: "text/html" }),
+                "text/plain": new Blob([textContent], { type: "text/plain" })
+            });
+
+            await navigator.clipboard.write([clipboardItem]);
+            alert("Success! Just go into your Google Doc, press Ctrl+V (or Cmd+V), and it will paste cleanly with formatting intact.");
+        } catch (err) {
+            // Fallback plain text copy if browser security restricts rich clipboard
+            navigator.clipboard.writeText(outputElement.innerText);
+            alert("Copied as plain text to your clipboard! Paste directly into your Google Doc.");
         }
     }
 </script>
