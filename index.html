@@ -18,6 +18,7 @@
         button { width: 100%; padding: 16px; background: #2563eb; color: white; border: none; border-radius: 10px; margin-top: 20px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: background 0.2s, transform 0.1s; }
         button:hover { background: #1d4ed8; }
         button:active { transform: scale(0.99); }
+        button:disabled { background: #4b5563; cursor: not-allowed; }
 
         /* Output Area optimized for manual selection and clean copying */
         #output { background: #ffffff; color: #111827; padding: 45px; border-radius: 12px; margin-top: 30px; line-height: 1.7; min-height: 150px; border: 1px solid #e5e7eb; box-sizing: border-box; user-select: text; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
@@ -49,7 +50,7 @@
     <label>Source Text / Article / Assignment Transcript</label>
     <textarea id="rawText" rows="7" placeholder="Paste assignment text or reading material here..."></textarea>
 
-    <button onclick="generate()">Generate Study Guide</button>
+    <button id="genBtn" onclick="generate()">Generate Study Guide</button>
 
     <div id="output">Generated binder material will appear here... Highlight and copy this box directly into your Google Doc.</div>
 </div>
@@ -67,6 +68,7 @@
         const text = document.getElementById('rawText').value.trim();
         const includeQuiz = document.getElementById('includeQuiz').checked;
         const output = document.getElementById('output');
+        const genBtn = document.getElementById('genBtn');
 
         if (!apiKey || !text) { 
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Missing API Key or Source Text</span>"; 
@@ -75,6 +77,7 @@
 
         localStorage.setItem('gemini_api_key', apiKey);
         output.innerHTML = "Generating top-tier binder material... Please wait.";
+        genBtn.disabled = true;
 
         const prompt = `Act as an expert academic tutor helping a student secure an A+ grade on open-note tests. 
 
@@ -112,8 +115,10 @@
             }
         }
 
+        genBtn.disabled = false;
+
         if (!success || !data || data.error) {
-            const errorMsg = data && data.error ? data.error.message : "All endpoints are currently busy.";
+            const errorMsg = data && data.error ? data.error.message : "All endpoints are currently busy or rate limit reached.";
             output.innerHTML = `<span style='color: #ef4444; font-weight: bold;'>API Error: ${errorMsg}</span>`;
             return;
         }
