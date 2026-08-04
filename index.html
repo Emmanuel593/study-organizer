@@ -28,6 +28,13 @@
         
         /* Document Layout inside Output */
         .doc-title { font-size: 1.8rem; font-weight: bold; color: #f1f5f9; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0; page-break-after: avoid; break-after: avoid; }
+        
+        /* Cornell Layout Styling */
+        .cornell-row { display: grid; grid-template-columns: 240px 1fr; gap: 15px; margin-bottom: 15px; align-items: start; }
+        .cornell-cue { background: #e2e8f0; color: #0f172a; padding: 12px; border-radius: 6px; font-weight: bold; border-left: 4px solid #3b82f6; font-size: 0.95rem; }
+        .cornell-note { background: #f8fafc; color: #1e293b; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.95rem; }
+        .cornell-summary { background: #f1f5f9; color: #1e293b; padding: 15px; border-radius: 6px; border-top: 3px solid #3b82f6; margin-top: 20px; font-weight: 500; }
+
         .cheat-card { background: #f8fafc; color: #1e293b; border-left: 4px solid #3b82f6; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid; }
         .cheat-card h2, .cheat-card h3 { margin-top: 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; page-break-after: avoid; break-after: avoid; }
         
@@ -37,7 +44,7 @@
         .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 8px; }
         .quiz-answer { color: #047857; background: #ecfdf5; padding: 10px; border-radius: 4px; border-left: 3px solid #10b981; font-weight: 500; margin-top: 5px; }
 
-        /* Print Layout: Locks white background strictly to printed paper, forces title & headers to stay locked with content */
+        /* Print Layout: Locks white background strictly to printed paper, forces title to stay grouped on page 1 */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
             .container { max-width: 100% !important; background: #ffffff !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
@@ -46,6 +53,10 @@
             .doc-title { color: #000000 !important; border-bottom: 2px solid #000000 !important; page-break-after: avoid !important; break-after: avoid !important; }
             .cheat-card, .quiz-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; break-inside: avoid !important; background: #ffffff !important; color: #000000 !important; margin-bottom: 20px !important; box-shadow: none !important; }
             .cheat-card h2, .cheat-card h3, .quiz-card h2, .quiz-card h3 { page-break-after: avoid !important; break-after: avoid !important; }
+            .cornell-row { page-break-inside: avoid !important; break-inside: avoid !important; }
+            .cornell-cue { background: #f1f5f9 !important; color: #000000 !important; border-left: 4px solid #000000 !important; }
+            .cornell-note { background: #ffffff !important; color: #000000 !important; border: 1px solid #cbd5e1 !important; }
+            .cornell-summary { background: #f8fafc !important; color: #000000 !important; border-top: 3px solid #000000 !important; }
             .quiz-item { background: #ffffff !important; border: 1px solid #cbd5e1 !important; }
             .quiz-answer { background: #f8fafc !important; color: #000000 !important; border-left: 3px solid #64748b !important; }
         }
@@ -62,8 +73,8 @@
         <div>
             <label>Note Format Style</label>
             <select id="formatStyle">
-                <option value="Cornell Notes Format" selected>Cornell Notes Format (Structured Cues, Notes, and Summary)</option>
-                <option value="Standard Clean Notes & Q&A">Standard Clean Notes & Direct Q&A Pairs</option>
+                <option value="Cornell Notes Format" selected>Cornell Notes Format (Cue Prompts on Left, Explanatory Notes on Right)</option>
+                <option value="Standard Clean Notes">Standard Clean Notes & Bullet Points</option>
             </select>
         </div>
     </div>
@@ -114,7 +125,14 @@
         CRITICAL STRUCTURAL INSTRUCTIONS:
         1. Start your response with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
         2. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        3. Wrap core study notes inside clean HTML elements with class "cheat-card". IMPORTANT: Do not just list standalone heading bullet points. Every core concept must be framed as a clear explanatory section where key questions are directly addressed with full text answers. Keep the summary section locked at the bottom of the notes.
+        3. For the core notes, if Cornell Notes Format is selected, structure them explicitly using rows where the cue prompt or heading is separated from the descriptive explanation text, utilizing this exact layout pattern:
+           <div class="cheat-card">
+               <div class="cornell-row">
+                   <div class="cornell-cue">Cue or Topic Heading</div>
+                   <div class="cornell-note">Full explanatory notes, breakdowns, and details go here.</div>
+               </div>
+           </div>
+           Include a clean summary block at the bottom of the notes using <div class="cornell-summary">Summary text here.</div>.
         4. ${includeQuiz ? 'Include a Practice Quiz section wrapped inside an HTML element with class "quiz-card". Every single quiz question MUST have its direct answer fully written out and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
         5. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
