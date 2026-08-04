@@ -6,18 +6,10 @@
     <title>A+ Ultimate Cheat Sheet & Quiz Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-color: #060913;
-            --card-bg: #0d1322;
-            --text-color: #f1f5f9;
-            --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
-            --border-color: #1e293b;
-            --input-bg: #020617;
-        }
+        :root { --bg-color: #060913; --card-bg: #0d1322; --text-color: #f1f5f9; --accent-color: #3b82f6; --border-color: #1e293b; --input-bg: #020617; }
         body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 30px 20px; font-family: sans-serif; }
         .container { width: 100%; max-width: 1050px; background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color); margin: auto; }
-        .output-box { background: #ffffff; color: #1e293b; padding: 40px; border-radius: 10px; font-family: Arial, sans-serif; line-height: 1.6; }
+        .output-box { background: #ffffff; color: #1e293b; padding: 40px; border-radius: 10px; font-family: Arial, sans-serif; line-height: 1.6; min-height: 300px; }
         .cheat-card { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
         .quiz-card { background: #f1f5f9; border-left: 4px solid #10b981; padding: 14px 16px; margin: 14px 0; border-radius: 0 8px 8px 0; }
         .highlight-term { font-weight: bold; color: #0f172a; }
@@ -28,7 +20,6 @@
 <div class="container">
     <header class="flex justify-between border-b border-gray-800 pb-4 mb-6">
         <h1 class="text-2xl font-bold text-blue-400">A+ Ultimate Cheat Sheet & Quiz Generator</h1>
-        <span class="text-gray-500 font-medium">Standardized Binder Mode</span>
     </header>
 
     <div class="mb-6 bg-black p-4 rounded-lg border border-gray-800">
@@ -38,7 +29,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-2">Detail Depth (1: Quick Facts, 2: Balanced, 3: Deep Analysis)</label>
+            <label class="block text-sm font-semibold text-gray-400 mb-2">Detail Depth (1: Quick, 2: Balanced, 3: Deep)</label>
             <input type="range" id="depthSlider" min="1" max="3" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600">
         </div>
         <div class="flex items-center pt-6">
@@ -49,19 +40,18 @@
 
     <div class="mb-6">
         <label class="block text-sm font-semibold text-gray-400 mb-2">Paste Source Text</label>
-        <textarea id="rawText" class="w-full h-48 p-4 bg-gray-950 border border-gray-800 rounded-lg text-white" placeholder="Paste text here..."></textarea>
+        <textarea id="rawText" class="w-full h-48 p-4 bg-gray-950 border border-gray-800 rounded-lg text-white"></textarea>
     </div>
 
     <button class="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 shadow-lg" onclick="formatNotes()">Generate Binder Content</button>
 
     <div class="mt-8 border-t border-gray-800 pt-6">
-        <div id="outputDisplay" class="output-box" contenteditable="true">Your notes will appear here for pasting into Google Docs...</div>
+        <div id="outputDisplay" class="output-box" contenteditable="true">Notes will appear here...</div>
     </div>
 </div>
 
 <script>
     function saveApiKey() { localStorage.setItem('gemini_api_key', document.getElementById('apiKey').value.trim()); }
-    
     window.onload = () => { document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key') || ''; };
 
     async function formatNotes() {
@@ -74,17 +64,25 @@
         if (!apiKey || !text) { output.innerHTML = "<p class='text-red-500'>Error: Missing Key or Source Text.</p>"; return; }
         output.innerHTML = "<p class='text-center'>Analyzing and structuring content...</p>";
 
-        const systemInstruction = `You are a study expert. Create study notes based on the user's requested depth: ${depth == 1 ? 'Quick facts only.' : depth == 2 ? 'Balanced, high-yield summary.' : 'Deep analysis, "why" and "how" implications.'}. ${includeQuiz ? 'Include a practice quiz at the end.' : ''} NO EM DASHES OR SEMICOLONS. Use clean HTML blocks (cheat-card / quiz-card).`;
+        const systemInstruction = `You are a study expert. 
+        Depth Level ${depth}: ${depth == 1 ? 'Focus on quick facts only.' : depth == 2 ? 'Provide a balanced, high-yield summary.' : 'Provide deep analysis and "why" implications.'}. 
+        ${includeQuiz ? 'Include a practice quiz at the end.' : 'Do NOT include a quiz.'}
+        NO EM DASHES OR SEMICOLONS. 
+        Return ONLY valid HTML using these classes: <div class="cheat-card"> for notes, <div class="quiz-card"> for quiz items, <span class="highlight-term"> for terms.`;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: text }] }], system_instruction: { parts: [{ text: systemInstruction }] } })
             });
             const data = await response.json();
-            output.innerHTML = data.candidates[0].content.parts[0].text.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
-        } catch (e) { output.innerHTML = "<p class='text-red-500'>Network error.</p>"; }
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                output.innerHTML = data.candidates[0].content.parts[0].text.replace(/```html/g, '').replace(/```/g, '');
+            } else {
+                output.innerHTML = "<p class='text-red-500'>Error: No response from AI.</p>";
+            }
+        } catch (e) { output.innerHTML = "<p class='text-red-500'>Network error. Check your API key or connection.</p>"; }
     }
 </script>
 </body>
