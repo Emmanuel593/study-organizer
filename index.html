@@ -1,59 +1,133 @@
+Here is the fully upgraded **Study Generator & Learning Suite**.
+
+It takes every single tool and feature from that blueprint—file uploads, interactive source chat, audio overview text-to-speech, flashcards, glossary extraction, Cornell/Outline format choices, 4-tier detail depth, plain English vocabulary settings, text exports, print layouts, and the absolute strict ban on m-dashes—and packs them into your single web app.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Generator</title>
+    <title>Study Generator & Learning Suite</title>
     <style>
-        body { font-family: sans-serif; background: #060913; color: #f1f5f9; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; }
-        label { display: block; margin: 15px 0 5px; color: #94a3b8; font-weight: bold; }
-        .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #f1f5f9; margin-top: 15px; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #060913; color: #f1f5f9; padding: 20px; margin: 0; }
+        .container { max-width: 900px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; }
+        h1 { color: #3b82f6; margin-top: 0; }
+        h3 { border-bottom: 1px solid #1e293b; padding-bottom: 8px; color: #cbd5e1; margin-top: 25px; }
+        label { display: block; margin: 12px 0 5px; color: #94a3b8; font-weight: bold; font-size: 0.9rem; }
+        .grid-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; background: #020617; padding: 15px; border-radius: 8px; border: 1px solid #1e293b; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #f1f5f9; font-weight: normal; margin: 0; }
         .checkbox-label input { width: auto; margin: 0; cursor: pointer; }
         input, textarea, select { width: 100%; padding: 12px; background: #020617; color: white; border: 1px solid #1e293b; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 20px; cursor: pointer; font-weight: bold; }
+        button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
         button:hover { background: #2563eb; }
-        .copy-btn { background: #10b981; margin-top: 10px; }
-        .copy-btn:hover { background: #059669; }
-        #output { background: white; color: #1e293b; padding: 20px; border-radius: 8px; margin-top: 30px; line-height: 1.6; min-height: 80px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .print-btn { background: #8b5cf6; }
+        .print-btn:hover { background: #7c3aed; }
+        .export-btn { background: #10b981; }
+        .export-btn:hover { background: #059669; }
+        .audio-btn { background: #f59e0b; }
+        .audio-btn:hover { background: #d97706; }
+        
+        #output { background: white; color: #1e293b; padding: 25px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 100px; }
         .cheat-card { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
         .quiz-card { background: #f1f5f9; border-left: 4px solid #10b981; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .flashcard { background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .glossary-card { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        
+        /* Chat Box Styles */
+        .chat-section { margin-top: 30px; background: #020617; padding: 20px; border-radius: 10px; border: 1px solid #1e293b; }
+        .chat-history { max-height: 250px; overflow-y: auto; background: #0d1322; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #1e293b; font-size: 0.95rem; }
+        .chat-msg { margin-bottom: 10px; }
+        .chat-user { color: #3b82f6; font-weight: bold; }
+        .chat-ai { color: #10b981; font-weight: bold; }
+
+        /* Print Layout Rules */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .container { max-width: 100%; background: white; border: none; padding: 0; }
+            h1, label, input, textarea, select, .checkbox-group, button, .btn-group, .chat-section, .grid-controls, h3 { display: none !important; }
+            #output { background: white !important; color: black !important; border: none !important; margin-top: 0 !important; padding: 0 !important; }
+            .cheat-card, .quiz-card, .flashcard, .glossary-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid; background: #fff !important; }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Study Generator</h1>
+    <h1>Study Generator & Learning Suite</h1>
+    
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="Paste your API Key">
     
-    <label>Detail Depth (1: Basic, 2: Balanced, 3: Deep Dive)</label>
-    <select id="depth">
-        <option value="1">1 - Basic</option>
-        <option value="2" selected>2 - Balanced</option>
-        <option value="3">3 - Deep Dive</option>
+    <div class="grid-controls">
+        <div>
+            <label>Detail Depth</label>
+            <select id="depth">
+                <option value="1">1 - Basic</option>
+                <option value="2" selected>2 - Balanced</option>
+                <option value="3">3 - Deep Dive</option>
+                <option value="4">4 - Deeper Than The Deep Dive</option>
+            </select>
+        </div>
+        <div>
+            <label>Vocabulary Simplification</label>
+            <select id="vocabLevel">
+                <option value="1">1 - Standard</option>
+                <option value="2" selected>2 - Simplified</option>
+                <option value="3">3 - Plain English (ELI5)</option>
+            </select>
+        </div>
+    </div>
+
+    <label>Note Format Style</label>
+    <select id="formatStyle">
+        <option value="Hierarchical Outline & Summary" selected>Hierarchical Outline & Bullet Points</option>
+        <option value="Cornell Notes Format">Cornell Notes Format (Cues, Notes, Summary)</option>
+        <option value="Executive Summary">Executive Summary</option>
+        <option value="Q&A Format">Q&A Study Format</option>
     </select>
 
-    <label>Vocabulary Simplification (1: Standard, 2: Simplified, 3: ELI5 / Plain English)</label>
-    <select id="vocabLevel">
-        <option value="1">1 - Standard</option>
-        <option value="2" selected>2 - Simplified</option>
-        <option value="3">3 - ELI5 (Plain English)</option>
-    </select>
+    <div class="checkbox-group">
+        <label class="checkbox-label">
+            <input type="checkbox" id="includeQuiz" checked> Include Practice Quiz
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="includeFlashcards" checked> Include Flashcards
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="includeGlossary" checked> Include Glossary / Key Terms
+        </label>
+    </div>
 
-    <label class="checkbox-label">
-        <input type="checkbox" id="includeQuiz" checked> Include Practice Quiz
-    </label>
+    <h3>Multi-Source Ingestion</h3>
+    <label>Upload Text/Doc File</label>
+    <input type="file" id="fileInput" accept=".txt,.md,.csv,.json,.html" onchange="handleFileUpload(event)">
 
-    <label>Source Text</label>
-    <textarea id="rawText" rows="8" placeholder="Paste your study material here..."></textarea>
+    <label>Or Paste Source Text / Article / Transcript</label>
+    <textarea id="rawText" rows="7" placeholder="Paste study text, lecture transcripts, slide decks, or video text here..."></textarea>
 
-    <button onclick="generate()">Generate Content</button>
-    <button class="copy-btn" onclick="copyContent()">Copy to Clipboard</button>
+    <button onclick="generate()">Generate Study Guide</button>
     
-    <div id="output">Content will appear here...</div>
+    <div class="btn-group">
+        <button class="export-btn" onclick="exportTextFile()">Download Text File (.txt)</button>
+        <button class="print-btn" onclick="triggerPrint()">Print Study Guide</button>
+        <button class="audio-btn" onclick="readAloud()">Read Audio Overview</button>
+    </div>
+    
+    <div id="output">Generated study content will appear here...</div>
+
+    <!-- Interactive Q&A Chat Section -->
+    <div class="chat-section">
+        <h3>Interactive Q&A / Source Chat</h3>
+        <div class="chat-history" id="chatHistory">Ask questions directly about your source text above...</div>
+        <input type="text" id="chatInput" placeholder="Ask a targeted question about the material..." onkeydown="if(event.key==='Enter') askQuestion()">
+        <button onclick="askQuestion()" style="margin-top: 8px;">Ask Question</button>
+    </div>
 </div>
 
 <script>
+    // Persistent API key loading
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) {
@@ -61,13 +135,28 @@
         }
     });
 
+    // File Ingestion Handler
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('rawText').value = e.target.result;
+        };
+        reader.readAsText(file);
+    }
+
+    // Main Generator Function
     async function generate() {
-        const apiKeyInput = document.getElementById('apiKey');
-        const apiKey = apiKeyInput.value.trim();
+        const apiKey = document.getElementById('apiKey').value.trim();
         const text = document.getElementById('rawText').value.trim();
         const depth = document.getElementById('depth').value;
         const vocabLevel = document.getElementById('vocabLevel').value;
+        const formatStyle = document.getElementById('formatStyle').value;
         const includeQuiz = document.getElementById('includeQuiz').checked;
+        const includeFlashcards = document.getElementById('includeFlashcards').checked;
+        const includeGlossary = document.getElementById('includeGlossary').checked;
         const output = document.getElementById('output');
 
         if (!apiKey || !text) { 
@@ -76,29 +165,32 @@
         }
 
         localStorage.setItem('gemini_api_key', apiKey);
-        output.innerHTML = "Generating study content... Please wait.";
+        output.innerHTML = "Generating comprehensive study material... Please wait.";
 
-        const prompt = `Act as an expert tutor. 
-        Depth Level: ${depth} (1=Basic overview, 2=Balanced detail, 3=Deep exhaustive dive). 
-        Vocabulary Simplification Level: ${vocabLevel} (1=Standard industry terms, 2=Simplified clear terms, 3=ELI5 plain English translation so difficult jargon is translated into terms anyone can easily understand).
-        ${includeQuiz ? "Include a practice quiz section." : "Do not include a quiz."}
+        const prompt = `Act as an expert tutor and study assistant. 
+        Format Style Requested: ${formatStyle}.
+        Depth Level: ${depth} (1=Basic overview, 2=Balanced detail, 3=Deep exhaustive dive, 4=Absolute maximum deep dive with hyper-granular detail). 
+        Vocabulary Simplification: ${vocabLevel} (1=Standard industry terms, 2=Simplified clear terms, 3=Plain English translation so difficult jargon is converted to straightforward concepts).
         
-        CRITICAL FORMATTING RULES:
-        1. NEVER use m-dashes (—) or double hyphens under any circumstances. Use commas, colons, periods, or parentheses instead.
-        2. Return output ONLY in clean HTML format using <div class="cheat-card"> for notes and <div class="quiz-card"> for quiz items. 
-        3. Do not include any internal meta-commentary, settings readouts, or text like "Depth Level" in the final output. 
-        4. Do not wrap the response in markdown code blocks.
-        
-        Text: ${text}`;
+        Optional Modules:
+        - ${includeQuiz ? "Include a Practice Quiz section wrapped inside <div class=\"quiz-card\">." : "Do not include a practice quiz."}
+        - ${includeFlashcards ? "Include Flashcards section wrapped inside <div class=\"flashcard\"> (Format as Term / Concept on top, Definition / Explanation underneath)." : "Do not include flashcards."}
+        - ${includeGlossary ? "Include a Glossary / Key Term Extraction section wrapped inside <div class=\"glossary-card\">." : "Do not include a glossary."}
+
+        STRICT FORMATTING AND PUNCTUATION RULES:
+        1. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
+        2. Wrap core study notes inside <div class="cheat-card">.
+        3. Do not include internal settings tags, configuration readouts, or commentary in the final text. 
+        4. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
+
+        Source Material: ${text}`;
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{text: prompt}]
-                    }]
+                    contents: [{ parts: [{text: prompt}] }]
                 })
             });
 
@@ -111,7 +203,13 @@
 
             if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
                 let rawHtml = data.candidates[0].content.parts[0].text;
+                
+                // Strip markdown code wrappers if present
                 rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
+                
+                // Hard Javascript backup check to delete any sneaky m-dashes or double hyphens
+                rawHtml = rawHtml.replace(/—|–|--/g, ', ');
+                
                 output.innerHTML = rawHtml;
             } else {
                 output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
@@ -121,17 +219,95 @@
         }
     }
 
-    function copyContent() {
+    // Interactive Chat / Q&A Feature
+    async function askQuestion() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const text = document.getElementById('rawText').value.trim();
+        const questionInput = document.getElementById('chatInput');
+        const question = questionInput.value.trim();
+        const chatHistory = document.getElementById('chatHistory');
+
+        if (!apiKey || !text || !question) return;
+
+        chatHistory.innerHTML += `<div class="chat-msg"><span class="chat-user">You:</span> ${question}</div>`;
+        questionInput.value = '';
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        const chatPrompt = `You are a helpful study tutor answering questions based ONLY on the source text provided. 
+        Question: ${question}
+        STRICT RULE: Do NOT use any m-dashes (—) or double hyphens. Keep answers concise, clear, and direct.
+        Source Text: ${text}`;
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: [{text: chatPrompt}] }] })
+            });
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content) {
+                let answer = data.candidates[0].content.parts[0].text;
+                answer = answer.replace(/—|–|--/g, ', ');
+                chatHistory.innerHTML += `<div class="chat-msg"><span class="chat-ai">AI Tutor:</span> ${answer}</div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        } catch(e) {
+            chatHistory.innerHTML += `<div class="chat-msg" style="color:red;">Error getting answer.</div>`;
+        }
+    }
+
+    // Export Text File
+    function exportTextFile() {
         const outputElement = document.getElementById('output');
-        const textToCopy = outputElement.innerText;
-        
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            const originalText = outputElement.innerHTML;
-            alert("Study guide copied to clipboard!");
-        }).catch(err => {
-            alert("Failed to copy text: " + err);
-        });
+        const textContent = outputElement.innerText;
+        if (!textContent || textContent.includes("Generated study content will appear here...")) {
+            alert("No content available to export!");
+            return;
+        }
+
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'study-guide.txt';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // Print Handler
+    function triggerPrint() {
+        const outputElement = document.getElementById('output');
+        if (!outputElement.innerText || outputElement.innerText.includes("Generated study content will appear here...")) {
+            alert("No content available to print!");
+            return;
+        }
+        window.print();
+    }
+
+    // Audio Overview / Text-To-Speech
+    function readAloud() {
+        const outputElement = document.getElementById('output');
+        const textToRead = outputElement.innerText;
+        if (!textToRead || textToRead.includes("Generated study content will appear here...")) {
+            alert("No content available to read!");
+            return;
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Stop any active speech
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Text-to-speech is not supported in this browser.");
+        }
     }
 </script>
 </body>
 </html>
+
+```
