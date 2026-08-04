@@ -9,60 +9,70 @@
         .container { max-width: 900px; margin: auto; background: #0d1322; padding: 30px; border-radius: 15px; border: 1px solid #1e293b; }
         h1 { color: #3b82f6; margin-top: 0; }
         label { display: block; margin: 12px 0 5px; color: #94a3b8; font-weight: bold; font-size: 0.9rem; }
-        .grid-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-controls { display: grid; grid-template-columns: 1fr; gap: 15px; }
         input, textarea, select { width: 100%; padding: 12px; background: #020617; color: white; border: 1px solid #1e293b; border-radius: 8px; box-sizing: border-box; }
         button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.2s; }
         button:hover { background: #2563eb; }
         
-        .export-btn { background: #10b981; padding: 18px; font-size: 1.1rem; margin-top: 20px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .export-btn { background: #10b981; flex: 1; padding: 16px; font-size: 1.05rem; margin-top: 0; }
         .export-btn:hover { background: #059669; }
+        .print-btn { background: #8b5cf6; flex: 1; padding: 16px; font-size: 1.05rem; margin-top: 0; }
+        .print-btn:hover { background: #7c3aed; }
         
-        #output { background: white; color: #1e293b; padding: 25px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 100px; }
-        .cheat-card { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
-        .quiz-card { background: #f1f5f9; border-left: 4px solid #10b981; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        #output { background: white; color: #1e293b; padding: 30px; border-radius: 8px; margin-top: 25px; line-height: 1.6; min-height: 100px; box-sizing: border-box; }
+        
+        /* Clean Cornell Notes Card Layout */
+        .cheat-card { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; }
+        .cheat-card h3 { margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        
+        /* Interactive Quiz Card */
+        .quiz-card { background: #f1f5f9; border-left: 4px solid #10b981; padding: 20px; margin-bottom: 20px; border-radius: 6px; box-sizing: border-box; }
+        .quiz-card h3 { margin-top: 0; color: #065f46; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; }
+        .quiz-item { margin-bottom: 15px; }
+        .quiz-question { font-weight: bold; color: #1e293b; margin-bottom: 5px; }
+        .quiz-answer { color: #047857; background: #e6f4ed; padding: 8px 12px; border-radius: 4px; display: none; margin-top: 5px; font-weight: 500; }
+        .reveal-btn { background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-top: 5px; }
+        .reveal-btn:hover { background: #047857; }
+
+        /* Print Layout Optimizations (Prevents cut-offs and forces clean white paper styling) */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .container { max-width: 100% !important; background: white !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+            h1, label, input, textarea, select, button, .btn-row, .grid-controls { display: none !important; }
+            #output { background: white !important; color: black !important; border: none !important; margin-top: 0 !important; padding: 0 !important; box-shadow: none !important; }
+            .cheat-card, .quiz-card { border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; background: #fff !important; margin-bottom: 20px !important; }
+            .quiz-answer { display: block !important; background: #f1f5f9 !important; border: 1px dashed #94a3b8 !important; color: black !important; }
+            .reveal-btn { display: none !important; }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Study Generator</h1>
+    <h1 id="appTitle">Study Generator</h1>
     
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="Paste your API Key">
     
     <div class="grid-controls">
         <div>
-            <label>Detail Depth</label>
-            <select id="depth">
-                <option value="1">1 - Basic</option>
-                <option value="2" selected>2 - Balanced</option>
-                <option value="3">3 - Deep Dive</option>
-                <option value="4">4 - Deeper Than The Deep Dive</option>
-            </select>
-        </div>
-        <div>
-            <label>Vocabulary Simplification</label>
-            <select id="vocabLevel">
-                <option value="1">1 - Standard</option>
-                <option value="2" selected>2 - Simplified</option>
-                <option value="3">3 - Plain English (ELI5)</option>
+            <label>Note Format Style</label>
+            <select id="formatStyle">
+                <option value="Cornell Notes Format" selected>Cornell Notes Format (Cues, Structured Notes, Summary)</option>
+                <option value="Standard Clean Notes">Standard Clean Notes & Bullet Points</option>
             </select>
         </div>
     </div>
-
-    <label>Note Format Style</label>
-    <select id="formatStyle">
-        <option value="Hierarchical Outline & Summary" selected>Hierarchical Outline & Bullet Points</option>
-        <option value="Cornell Notes Format">Cornell Notes Format (Cues, Notes, Summary)</option>
-        <option value="Executive Summary">Executive Summary</option>
-        <option value="Q&A Format">Q&A Study Format</option>
-    </select>
 
     <label>Source Text / Article / Transcript</label>
     <textarea id="rawText" rows="7" placeholder="Paste study text here..."></textarea>
 
     <button onclick="generate()">Generate Study Guide</button>
     
-    <button class="export-btn" onclick="exportTextFile()">Download Text Document (.txt)</button>
+    <div class="btn-row">
+        <button class="export-btn" onclick="exportTextFile()">Download Text Document (.txt)</button>
+        <button class="print-btn" onclick="triggerPrint()">Print Study Guide</button>
+    </div>
     
     <div id="output">Generated study content will appear here...</div>
 </div>
@@ -78,8 +88,6 @@
     async function generate() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const text = document.getElementById('rawText').value.trim();
-        const depth = document.getElementById('depth').value;
-        const vocabLevel = document.getElementById('vocabLevel').value;
         const formatStyle = document.getElementById('formatStyle').value;
         const output = document.getElementById('output');
 
@@ -89,22 +97,25 @@
         }
 
         localStorage.setItem('gemini_api_key', apiKey);
-        output.innerHTML = "Generating study material (retrying if busy)... Please wait.";
+        output.innerHTML = "Generating study material (retrying automatically if busy)... Please wait.";
 
         const prompt = `Act as an expert tutor and study assistant. 
-        Format Style Requested: ${formatStyle}.
-        Depth Level: ${depth} (1=Basic overview, 2=Balanced detail, 3=Deep exhaustive dive, 4=Absolute maximum deep dive). 
-        Vocabulary Simplification: ${vocabLevel} (1=Standard terms, 2=Simplified terms, 3=Plain English translation).
+        Note Format Style Requested: ${formatStyle}.
 
-        STRICT FORMATTING AND PUNCTUATION RULES:
-        1. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        2. Wrap core study notes inside <div class="cheat-card"> and include a practice quiz inside <div class="quiz-card">.
-        3. Do not include internal settings tags, configuration readouts, or commentary in the final text. 
-        4. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
+        CRITICAL INSTRUCTIONS:
+        1. Parse the provided source text completely. DO NOT repeat, echo, or include the source title, the format style name, or setting configurations at the top of your response. Begin directly with the generated study content.
+        2. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
+        3. Wrap core study notes inside clean HTML elements with class "cheat-card".
+        4. Include a Practice Quiz section wrapped inside an HTML element with class "quiz-card". Every quiz question must include both the question AND its direct answer provided underneath it using this exact structure:
+           <div class="quiz-item">
+               <div class="quiz-question">Question text here?</div>
+               <button class="reveal-btn" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">Show Answer</button>
+               <div class="quiz-answer">Answer text here.</div>
+           </div>
+        5. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
         Source Material: ${text}`;
 
-        // Fallback array across standard lightweight models to dodge persistent 503 capacity blocks
         const models = ['gemini-3.5-flash-lite', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
         let success = false;
         let data = null;
@@ -125,12 +136,12 @@
                     break;
                 }
             } catch (e) {
-                // Try next model if network fetch fails
+                // Proceed to next fallback model
             }
         }
 
         if (!success || !data || data.error) {
-            const errorMsg = data && data.error ? data.error.message : "All fallback endpoints are currently overloaded.";
+            const errorMsg = data && data.error ? data.error.message : "All endpoints are currently busy.";
             output.innerHTML = `<span style='color: #ef4444; font-weight: bold;'>API Error: ${errorMsg}</span>`;
             return;
         }
@@ -162,6 +173,15 @@
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+    }
+
+    function triggerPrint() {
+        const outputElement = document.getElementById('output');
+        if (!outputElement.innerText || outputElement.innerText.includes("Generated study content will appear here...")) {
+            alert("No content available to print!");
+            return;
+        }
+        window.print();
     }
 </script>
 </body>
