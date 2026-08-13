@@ -49,11 +49,12 @@
 
         .focus-card { background: #fffbeb; color: #92400e; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 25px; font-weight: 500; page-break-inside: avoid; }
 
+        /* STRICT PRINT OVERRIDE: Hides everything except the output container */
         @media print {
-            body { background: white; color: black; padding: 0; }
-            .container { background: white; border: none; box-shadow: none; padding: 0; max-width: 100%; }
-            h1, label, .grid-controls, .checkbox-container, textarea, .char-count, #genBtn, #printBtn { display: none !important; }
-            #output { border: none; box-shadow: none; padding: 0; margin: 0; color: black; }
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .container { background: white !important; border: none !important; box-shadow: none !important; padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+            h1, label, input, .grid-controls, .checkbox-container, textarea, .char-count, #genBtn, #printBtn, #apiKey { display: none !important; }
+            #output { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; color: black !important; background: white !important; }
         }
     </style>
 </head>
@@ -133,13 +134,13 @@
         output.innerHTML = "Generating top-tier binder material... Please wait.";
         genBtn.disabled = true;
 
-        const prompt = `Act as an expert academic tutor. Output ONLY raw HTML. Your very first character must be '<' and your output must begin strictly with: <h2 class="doc-title">. Do not output any intro, markdown, whitespace, dots, or characters before it.
+        const prompt = `Act as an expert academic tutor. Output ONLY raw HTML. Your output must start strictly with: <h2 class="doc-title">.
 
         Depth Level: ${detailLevel}.
         ${teacherFocus ? `Special Teacher Focus: ${teacherFocus}` : ''}
 
         RULES:
-        1. Start directly with <h2 class="doc-title">Title Here</h2>. Zero leading text or symbols.
+        1. The very first characters of your response MUST be '<h2 class="doc-title">'.
         2. NO m-dashes (—). Use commas, colons, or periods.
         3. Use class "cheat-card" for core notes sections.
         ${includeGlossary ? '4. Use class "glossary-card" for the glossary.' : ''}
@@ -159,7 +160,8 @@
                     body: JSON.stringify({
                         contents: [{ parts: [{text: prompt}] }],
                         generationConfig: {
-                            temperature: 0.1
+                            temperature: 0.0,
+                            topP: 0.1
                         }
                     })
                 });
@@ -183,25 +185,12 @@
         if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
             let rawHtml = data.candidates[0].content.parts[0].text;
             
-            rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
+            rawHtml = rawHtml.replace(/^```[a-zA-Z]*\s*/gm, '').replace(/```$/gm, '').trim();
             rawHtml = rawHtml.replace(/—|–|--/g, ', ');
             
-            // Hard parser sweep: locate the tag anywhere and strip everything before it completely
-            const cleanTags = ['<h2 class="doc-title">', '<h2 class=\'doc-title\'>', '<h2 class=doc-title>', '<h2'];
-            let titleIndex = -1;
-            for (let tag of cleanTags) {
-                titleIndex = rawHtml.indexOf(tag);
-                if (titleIndex !== -1) break;
-            }
-
-            if (titleIndex !== -1) {
-                rawHtml = rawHtml.substring(titleIndex);
-            } else {
-                // Absolute fallback brute-force: find the first '<' character
-                const firstTagIndex = rawHtml.indexOf('<');
-                if (firstTagIndex !== -1) {
-                    rawHtml = rawHtml.substring(firstTagIndex);
-                }
+            const firstTagIndex = rawHtml.indexOf('<');
+            if (firstTagIndex !== -1) {
+                rawHtml = rawHtml.substring(firstTagIndex);
             }
 
             output.innerHTML = rawHtml;
