@@ -28,10 +28,9 @@
         .btn-export { background: #059669; margin-top: 10px; }
         .btn-export:hover { background: #047857; }
 
-        /* Output card remains strictly white while outer app background stays dark */
         #output { background: #ffffff; color: #111827; padding: 45px; border-radius: 12px; margin-top: 30px; line-height: 1.7; min-height: 150px; border: 1px solid #e5e7eb; box-sizing: border-box; user-select: text; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
-        .doc-title { font-size: 22px; font-weight: bold; color: #000000; margin-bottom: 20px; margin-top: 0; text-transform: uppercase; }
+        .doc-title { font-size: 22px; font-weight: bold; color: #000000; margin-bottom: 20px; margin-top: 0; text-transform: uppercase; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
         .cheat-card { background: #ffffff; color: #111827; margin-bottom: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; page-break-inside: avoid; }
         .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #000000; font-size: 16px; font-weight: bold; }
         .cheat-card p, .cheat-card ul { margin-top: 0; color: #222222; font-size: 1rem; }
@@ -50,7 +49,6 @@
 
         .focus-card { background: #fffbeb; color: #92400e; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 25px; font-weight: 500; page-break-inside: avoid; }
 
-        /* Print styles: hides UI controls and formats output for clean paper or Save-as-PDF */
         @media print {
             body { background: white; color: black; padding: 0; }
             .container { background: white; border: none; box-shadow: none; padding: 0; max-width: 100%; }
@@ -140,14 +138,14 @@
         ${teacherFocus ? `Special Teacher Focus Instructions to Prioritize: ${teacherFocus}` : ''}
 
         CRITICAL INSTRUCTIONS:
-        1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>. DO NOT output any leading dots, bullet points, asterisks, or markdown symbols before the title tag.
+        1. Parse the provided source text completely. Begin directly and immediately with the main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>. ABSOLUTELY DO NOT output any leading text, dots, bullets, whitespace, markdown markers, or introductory commentary before the <h2 class="doc-title"> tag.
         2. ${teacherFocus ? `Include a distinct highlighted callout block right under the title summarizing the teacher's focus instructions using class "focus-card".` : ''}
         3. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
         4. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear, bold heading followed by clean explanatory text or standard bullet lists. Emphasize historical significance, thematic context, character motivations, and cause-and-effect chains.
         5. Include a concise "Executive Summary" section block at the end of the notes.
         6. ${includeGlossary ? 'Include a Key Terms Glossary section wrapped inside an HTML element with class "glossary-card" featuring complex literary terms, historical figures, or high-yield words from the text defined clearly as: <div class="glossary-item"><span class="glossary-term">Term:</span> Definition goes here.</div>' : ''}
         7. ${includeQuiz ? 'Include a practice quiz section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n          </div>' : 'Do not include a practice quiz section.'}
-        8. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly, starting immediately with the <h2 class="doc-title"> tag.
+        8. Do not wrap the final output in markdown code blocks like \`\`\`html. Output raw styled HTML directly, starting with the <h2 class="doc-title"> tag.
 
         Source Material: ${text}`;
 
@@ -185,15 +183,21 @@
 
         if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
             let rawHtml = data.candidates[0].content.parts[0].text;
+            
+            // Clean up code blocks if model accidentally included them
             rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
             rawHtml = rawHtml.replace(/—|–|--/g, ', ');
             
-            // Aggressively strip out any leading dots, bullets, list markers, or stray characters before the first HTML tag
-            const firstTagIndex = rawHtml.indexOf('<');
-            if (firstTagIndex > 0) {
-                rawHtml = rawHtml.substring(firstTagIndex);
+            // Aggressively strip out any leading text, dots, bullets, or stray characters before the <h2 class="doc-title"> tag
+            const titleIndex = rawHtml.indexOf('<h2 class="doc-title">');
+            if (titleIndex !== -1) {
+                rawHtml = rawHtml.substring(titleIndex);
+            } else {
+                const genericH2Index = rawHtml.indexOf('<h2');
+                if (genericH2Index !== -1) {
+                    rawHtml = rawHtml.substring(genericH2Index);
+                }
             }
-            rawHtml = rawHtml.replace(/^[•\-\*\s•]+/g, '').trim();
 
             output.innerHTML = rawHtml;
         } else {
