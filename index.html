@@ -140,14 +140,14 @@
         ${teacherFocus ? `Special Teacher Focus Instructions to Prioritize: ${teacherFocus}` : ''}
 
         CRITICAL INSTRUCTIONS:
-        1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>
+        1. Parse the provided source text completely. Begin directly with a clear main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>. DO NOT output any leading dots, bullet points, asterisks, or markdown symbols before the title tag.
         2. ${teacherFocus ? `Include a distinct highlighted callout block right under the title summarizing the teacher's focus instructions using class "focus-card".` : ''}
         3. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
         4. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear, bold heading followed by clean explanatory text or standard bullet lists. Emphasize historical significance, thematic context, character motivations, and cause-and-effect chains.
         5. Include a concise "Executive Summary" section block at the end of the notes.
         6. ${includeGlossary ? 'Include a Key Terms Glossary section wrapped inside an HTML element with class "glossary-card" featuring complex literary terms, historical figures, or high-yield words from the text defined clearly as: <div class="glossary-item"><span class="glossary-term">Term:</span> Definition goes here.</div>' : ''}
         7. ${includeQuiz ? 'Include a practice quiz section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n          </div>' : 'Do not include a practice quiz section.'}
-        8. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
+        8. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly, starting immediately with the <h2 class="doc-title"> tag.
 
         Source Material: ${text}`;
 
@@ -187,7 +187,14 @@
             let rawHtml = data.candidates[0].content.parts[0].text;
             rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
             rawHtml = rawHtml.replace(/—|–|--/g, ', ');
-            rawHtml = rawHtml.replace(/^[•\-\*\s•]+/, ''); // Strips rogue leading bullets/dots
+            
+            // Aggressively strip out any leading dots, bullets, list markers, or stray characters before the first HTML tag
+            const firstTagIndex = rawHtml.indexOf('<');
+            if (firstTagIndex > 0) {
+                rawHtml = rawHtml.substring(firstTagIndex);
+            }
+            rawHtml = rawHtml.replace(/^[•\-\*\s•]+/g, '').trim();
+
             output.innerHTML = rawHtml;
         } else {
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
