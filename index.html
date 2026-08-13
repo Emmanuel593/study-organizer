@@ -30,26 +30,28 @@
 
         #output { background: #ffffff; color: #111827; padding: 45px; border-radius: 12px; margin-top: 30px; line-height: 1.7; min-height: 150px; border: 1px solid #e5e7eb; box-sizing: border-box; user-select: text; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
-        .doc-title { font-size: 22px; font-weight: bold; color: #000000; margin-bottom: 20px; margin-top: 0; text-transform: uppercase; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-        .cheat-card { background: #ffffff; color: #111827; margin-bottom: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; page-break-inside: avoid; }
-        .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #000000; font-size: 16px; font-weight: bold; }
-        .cheat-card p, .cheat-card ul { margin-top: 0; color: #222222; font-size: 1rem; }
-        .cheat-card li { margin-bottom: 6px; }
+        /* CLEAN TYPOGRAPHY & HARD PAGE BREAK PROTECTION */
+        .doc-title { font-size: 22px; font-weight: bold; color: #000000; margin-bottom: 20px; margin-top: 0; text-transform: uppercase; border-bottom: 2px solid #2563eb; padding-bottom: 10px; break-after: avoid; page-break-after: avoid; }
         
-        .quiz-card { background: #ffffff; color: #111827; margin-bottom: 25px; page-break-inside: avoid; }
-        .quiz-card h3 { margin-top: 0; margin-bottom: 15px; color: #000000; font-size: 16px; font-weight: bold; border-top: 2px solid #000000; padding-top: 15px; }
-        .quiz-item { margin-bottom: 16px; background: #fafafa; padding: 12px; border-radius: 4px; border: 1px solid #e5e7eb; }
-        .quiz-question { font-weight: bold; color: #000000; margin-bottom: 6px; }
+        .cheat-card { background: #ffffff; color: #111827; margin-bottom: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; break-inside: avoid; page-break-inside: avoid; }
+        .cheat-card h3 { margin-top: 0; margin-bottom: 8px; color: #000000; font-size: 16px; font-weight: bold; break-after: avoid; page-break-after: avoid; }
+        .cheat-card p, .cheat-card ul { margin-top: 0; color: #222222; font-size: 1rem; orphans: 3; widows: 3; }
+        .cheat-card li { margin-bottom: 6px; break-inside: avoid; page-break-inside: avoid; }
+        
+        .quiz-card { background: #ffffff; color: #111827; margin-bottom: 25px; break-inside: avoid; page-break-inside: avoid; }
+        .quiz-card h3 { margin-top: 0; margin-bottom: 15px; color: #000000; font-size: 16px; font-weight: bold; border-top: 2px solid #000000; padding-top: 15px; break-after: avoid; page-break-after: avoid; }
+        .quiz-item { margin-bottom: 16px; background: #fafafa; padding: 12px; border-radius: 4px; border: 1px solid #e5e7eb; break-inside: avoid; page-break-inside: avoid; }
+        .quiz-question { font-weight: bold; color: #000000; margin-bottom: 6px; break-after: avoid; page-break-after: avoid; }
         .quiz-answer { color: #047857; background: #f0fdf4; padding: 8px; border-radius: 4px; font-weight: 600; margin-top: 6px; display: block !important; }
 
-        .glossary-card { background: #ffffff; color: #111827; margin-bottom: 25px; border-top: 2px solid #2563eb; padding-top: 15px; page-break-inside: avoid; }
-        .glossary-card h3 { margin-top: 0; margin-bottom: 15px; color: #1d4ed8; font-size: 16px; font-weight: bold; }
-        .glossary-item { margin-bottom: 10px; background: #f8fafc; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .glossary-card { background: #ffffff; color: #111827; margin-bottom: 25px; border-top: 2px solid #2563eb; padding-top: 15px; break-inside: avoid; page-break-inside: avoid; }
+        .glossary-card h3 { margin-top: 0; margin-bottom: 15px; color: #1d4ed8; font-size: 16px; font-weight: bold; break-after: avoid; page-break-after: avoid; }
+        .glossary-item { margin-bottom: 10px; background: #f8fafc; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0; break-inside: avoid; page-break-inside: avoid; }
         .glossary-term { font-weight: bold; color: #1e293b; }
 
-        .focus-card { background: #fffbeb; color: #92400e; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 25px; font-weight: 500; page-break-inside: avoid; }
+        .focus-card { background: #fffbeb; color: #92400e; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 25px; font-weight: 500; break-inside: avoid; page-break-inside: avoid; }
 
-        /* STRICT PRINT OVERRIDE: Hides everything except the output container */
+        /* STRICT PRINT OVERRIDE */
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; }
             .container { background: white !important; border: none !important; box-shadow: none !important; padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
@@ -142,9 +144,9 @@
         RULES:
         1. The very first characters of your response MUST be '<h2 class="doc-title">'.
         2. NO m-dashes (—). Use commas, colons, or periods.
-        3. Use class "cheat-card" for core notes sections.
+        3. Use class "cheat-card" for core notes sections. Ensure cards are self-contained so they don't split awkwardly.
         ${includeGlossary ? '4. Use class "glossary-card" for the glossary.' : ''}
-        ${includeQuiz ? '5. Use class "quiz-card" for the practice quiz.' : ''}
+        ${includeQuiz ? '5. Use class "quiz-card" for the practice quiz. Ensure each quiz item is self-contained using class "quiz-item".' : ''}
 
         Source Material: ${text}`;
 
