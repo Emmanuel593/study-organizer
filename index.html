@@ -187,6 +187,7 @@
             let rawHtml = data.candidates[0].content.parts[0].text;
             rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
             rawHtml = rawHtml.replace(/—|–|--/g, ', ');
+            rawHtml = rawHtml.replace(/^[•\-\*\s•]+/, ''); // Strips rogue leading bullets/dots
             output.innerHTML = rawHtml;
         } else {
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
