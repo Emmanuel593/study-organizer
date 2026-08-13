@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Generator & Study Sheet</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .navbar h1 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--accent);
+        }
+
+        .nav-link {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border-color: var(--accent);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .navbar, .btn {
+                display: none;
+            }
+            .card {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigation bar to go back to main notes -->
+        <div class="navbar">
+            <h1>Math Workspace</h1>
+            <a href="index.html" class="nav-link">&larr; Back to Main Notes</a>
+        </div>
+
+        <!-- Main Math Content Card -->
+        <div class="card">
+            <h2>Math Problem Generator</h2>
+            <p>Use this dedicated space to generate, review, and print out your math practice sheets cleanly without cluttering your main notes page.</p>
+            
+            <button class="btn" onclick="window.print()">Print Study Sheet</button>
+        </div>
+    </div>
+
+</body>
+</html>
