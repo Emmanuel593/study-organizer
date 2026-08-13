@@ -25,6 +25,9 @@
         button:active { transform: scale(0.99); }
         button:disabled { background: #4b5563; cursor: not-allowed; }
 
+        .btn-export { background: #059669; margin-top: 10px; }
+        .btn-export:hover { background: #047857; }
+
         /* Output card remains strictly white while outer app background stays dark */
         #output { background: #ffffff; color: #111827; padding: 45px; border-radius: 12px; margin-top: 30px; line-height: 1.7; min-height: 150px; border: 1px solid #e5e7eb; box-sizing: border-box; user-select: text; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
@@ -46,6 +49,14 @@
         .glossary-term { font-weight: bold; color: #1e293b; }
 
         .focus-card { background: #fffbeb; color: #92400e; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 25px; font-weight: 500; page-break-inside: avoid; }
+
+        /* Print styles: hides UI controls and formats output for clean paper or Save-as-PDF */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .container { background: white; border: none; box-shadow: none; padding: 0; max-width: 100%; }
+            h1, label, .grid-controls, .checkbox-container, textarea, .char-count, #genBtn, #printBtn { display: none !important; }
+            #output { border: none; box-shadow: none; padding: 0; margin: 0; color: black; }
+        }
     </style>
 </head>
 <body>
@@ -87,6 +98,7 @@
     <div class="char-count" id="charCount">0 characters</div>
 
     <button id="genBtn" onclick="generate()">Generate Study Guide</button>
+    <button id="printBtn" class="btn-export" onclick="exportToPDF()">Export / Print Study Guide</button>
 
     <div id="output">Generated binder material will appear here... Highlight and copy this box directly into your Google Doc.</div>
 </div>
@@ -134,7 +146,7 @@
         4. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear, bold heading followed by clean explanatory text or standard bullet lists. Emphasize historical significance, thematic context, character motivations, and cause-and-effect chains.
         5. Include a concise "Executive Summary" section block at the end of the notes.
         6. ${includeGlossary ? 'Include a Key Terms Glossary section wrapped inside an HTML element with class "glossary-card" featuring complex literary terms, historical figures, or high-yield words from the text defined clearly as: <div class="glossary-item"><span class="glossary-term">Term:</span> Definition goes here.</div>' : ''}
-        7. ${includeQuiz ? 'Include a practice quiz section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n           </div>' : 'Do not include a practice quiz section.'}
+        7. ${includeQuiz ? 'Include a practice quiz section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n          </div>' : 'Do not include a practice quiz section.'}
         8. Do not wrap the response in markdown code blocks like \`\`\`html. Output raw styled HTML directly.
 
         Source Material: ${text}`;
@@ -179,6 +191,15 @@
         } else {
             output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
         }
+    }
+
+    function exportToPDF() {
+        const output = document.getElementById('output').innerHTML;
+        if (!output || output.includes("Generated binder material will appear here") || output.includes("Error")) {
+            alert("Please generate a study guide first before exporting.");
+            return;
+        }
+        window.print();
     }
 </script>
 </body>
