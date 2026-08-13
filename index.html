@@ -133,23 +133,21 @@
         output.innerHTML = "Generating top-tier binder material... Please wait.";
         genBtn.disabled = true;
 
-        const prompt = `Act as an expert academic tutor specializing in history, literature, and word-based humanities to help a student secure an A+ grade on open-note tests. 
-        Depth Level: ${detailLevel}.
-        ${teacherFocus ? `Special Teacher Focus Instructions to Prioritize: ${teacherFocus}` : ''}
+        const prompt = `Act as an expert academic tutor. Output ONLY raw HTML. Your very first character must be '<' and your output must begin strictly with: <h2 class="doc-title">. Do not output any intro, markdown, whitespace, dots, or characters before it.
 
-        CRITICAL INSTRUCTIONS:
-        1. Parse the provided source text completely. Begin directly and immediately with the main document title wrapped inside: <h2 class="doc-title">Your Descriptive Title Here</h2>. ABSOLUTELY DO NOT output any leading text, dots, bullets, whitespace, markdown markers, or introductory commentary before the <h2 class="doc-title"> tag.
-        2. ${teacherFocus ? `Include a distinct highlighted callout block right under the title summarizing the teacher's focus instructions using class "focus-card".` : ''}
-        3. ABSOLUTE BAN: NEVER use m-dashes (—), en-dashes, or double hyphens anywhere in the response under any circumstances. Use commas, colons, semicolons, periods, or parentheses instead.
-        4. Structure core notes into clean vertical blocks using the "cheat-card" class. Each block must feature a clear, bold heading followed by clean explanatory text or standard bullet lists. Emphasize historical significance, thematic context, character motivations, and cause-and-effect chains.
-        5. Include a concise "Executive Summary" section block at the end of the notes.
-        6. ${includeGlossary ? 'Include a Key Terms Glossary section wrapped inside an HTML element with class "glossary-card" featuring complex literary terms, historical figures, or high-yield words from the text defined clearly as: <div class="glossary-item"><span class="glossary-term">Term:</span> Definition goes here.</div>' : ''}
-        7. ${includeQuiz ? 'Include a practice quiz section wrapped inside an HTML element with class "quiz-card". Every single practice question MUST have its direct answer fully visible and printed right beneath it using this exact structure:\n           <div class="quiz-item">\n               <div class="quiz-question">Question text here?</div>\n               <div class="quiz-answer">Answer: Detailed explanation text goes here.</div>\n          </div>' : 'Do not include a practice quiz section.'}
-        8. Do not wrap the final output in markdown code blocks like \`\`\`html. Output raw styled HTML directly, starting with the <h2 class="doc-title"> tag.
+        Depth Level: ${detailLevel}.
+        ${teacherFocus ? `Special Teacher Focus: ${teacherFocus}` : ''}
+
+        RULES:
+        1. Start directly with <h2 class="doc-title">Title Here</h2>. Zero leading text or symbols.
+        2. NO m-dashes (—). Use commas, colons, or periods.
+        3. Use class "cheat-card" for core notes sections.
+        ${includeGlossary ? '4. Use class "glossary-card" for the glossary.' : ''}
+        ${includeQuiz ? '5. Use class "quiz-card" for the practice quiz.' : ''}
 
         Source Material: ${text}`;
 
-        const models = ['gemini-3.5-flash-lite', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
+        const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash'];
         let success = false;
         let data = null;
 
@@ -159,7 +157,10 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        contents: [{ parts: [{text: prompt}] }]
+                        contents: [{ parts: [{text: prompt}] }],
+                        generationConfig: {
+                            temperature: 0.1
+                        }
                     })
                 });
 
@@ -168,15 +169,13 @@
                     success = true;
                     break;
                 }
-            } catch (e) {
-                // Proceed to next fallback model
-            }
+            } catch (e) {}
         }
 
         genBtn.disabled = false;
 
         if (!success || !data || data.error) {
-            const errorMsg = data && data.error ? data.error.message : "All endpoints are currently busy or rate limit reached.";
+            const errorMsg = data && data.error ? data.error.message : "All endpoints busy.";
             output.innerHTML = `<span style='color: #ef4444; font-weight: bold;'>API Error: ${errorMsg}</span>`;
             return;
         }
@@ -184,24 +183,30 @@
         if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
             let rawHtml = data.candidates[0].content.parts[0].text;
             
-            // Clean up code blocks if model accidentally included them
             rawHtml = rawHtml.replace(/^```(html)?[\s\S]*?\n/, '').replace(/```$/, '').trim();
             rawHtml = rawHtml.replace(/—|–|--/g, ', ');
             
-            // Aggressively strip out any leading text, dots, bullets, or stray characters before the <h2 class="doc-title"> tag
-            const titleIndex = rawHtml.indexOf('<h2 class="doc-title">');
+            // Hard parser sweep: locate the tag anywhere and strip everything before it completely
+            const cleanTags = ['<h2 class="doc-title">', '<h2 class=\'doc-title\'>', '<h2 class=doc-title>', '<h2'];
+            let titleIndex = -1;
+            for (let tag of cleanTags) {
+                titleIndex = rawHtml.indexOf(tag);
+                if (titleIndex !== -1) break;
+            }
+
             if (titleIndex !== -1) {
                 rawHtml = rawHtml.substring(titleIndex);
             } else {
-                const genericH2Index = rawHtml.indexOf('<h2');
-                if (genericH2Index !== -1) {
-                    rawHtml = rawHtml.substring(genericH2Index);
+                // Absolute fallback brute-force: find the first '<' character
+                const firstTagIndex = rawHtml.indexOf('<');
+                if (firstTagIndex !== -1) {
+                    rawHtml = rawHtml.substring(firstTagIndex);
                 }
             }
 
             output.innerHTML = rawHtml;
         } else {
-            output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure from API.</span>";
+            output.innerHTML = "<span style='color: #ef4444; font-weight: bold;'>Error: Unexpected response structure.</span>";
         }
     }
 
